@@ -106,27 +106,51 @@
   nav button.active { background: var(--surface); color: var(--brand-green); box-shadow: 0 2px 8px var(--shadow); }
 
   /* --- Layout principal Fluido --- */
-  /* Ajustado al 96% de la pantalla para aprovechar todo el ancho disponible */
   main { width: 96%; max-width: 1800px; margin: 0 auto; padding: 2rem 1rem 4rem; }
   .vista { display: none; opacity: 0; transform: translateY(10px); transition: all 0.4s ease-out; }
   .vista.activa { display: block; opacity: 1; transform: translateY(0); }
 
-  /* --- Tarjeta Resumen Premium --- */
-  .resumen {
+  /* --- NUEVA TARJETA RESUMEN COMPACTA (Estilo Píldora) --- */
+  .resumen-container {
+    margin-bottom: 1.5rem;
+    display: flex;
+  }
+  
+  .notification-pill {
+    display: inline-flex;
+    align-items: center;
     background: linear-gradient(135deg, var(--brand-green) 0%, #0d4f35 100%);
-    color: white;
-    border-radius: 16px;
-    padding: 1.5rem 2rem;
-    margin-bottom: 2rem;
-    font-size: 1.1rem;
-    box-shadow: 0 10px 25px rgba(15, 99, 67, 0.2);
+    color: #ffffff;
+    padding: 10px 20px;
+    border-radius: 50px; /* Forma de píldora moderna */
+    font-size: 0.95rem;
+    gap: 16px;
+    box-shadow: 0 6px 20px rgba(15, 99, 67, 0.2);
     font-family: var(--display);
+    flex-wrap: wrap;
+  }
+
+  .pill-item {
     display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: 8px;
   }
-  .resumen-icono { font-size: 2rem; background: rgba(255,255,255,0.15); padding: 0.8rem; border-radius: 12px; }
-  .resumen strong { color: var(--brand-orange); font-weight: 800; font-size: 1.2rem; }
+
+  .pill-divider {
+    width: 1px;
+    height: 16px;
+    background-color: rgba(255, 255, 255, 0.25);
+  }
+
+  .notification-pill strong { 
+    color: var(--brand-orange); 
+    font-weight: 800; 
+  }
+  
+  .highlight-money {
+    color: #ffd166; /* Tono dorado elegante para el dinero */
+    font-weight: bold;
+  }
   
   /* --- Filtros Modernos --- */
   .filtros {
@@ -183,7 +207,7 @@
   
   /* --- Tabla Mejorada --- */
   .tabla-envoltura {
-    overflow-x: auto; /* Solo genera scroll horizontal en pantallas pequeñas */
+    overflow-x: auto;
     border: 1px solid var(--line);
     border-radius: 16px;
     background: var(--surface);
@@ -212,7 +236,6 @@
   .num { font-family: var(--mono); font-weight: 600; color: var(--ink-soft); }
   .col-desc { min-width: 250px; line-height: 1.5; font-weight: 500; }
   
-  /* Animación flash para cuando se actualiza una fila */
   @keyframes rowUpdate {
     0% { background-color: rgba(15, 99, 67, 0.15); }
     100% { background-color: transparent; }
@@ -242,7 +265,6 @@
   .estado.interactivo:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 4px 10px rgba(0,0,0,0.1); filter: brightness(1.05); }
   .estado.interactivo:active { transform: scale(0.95); }
 
-  /* Colores de estados */
   .estado.entrega-pendiente { background: var(--state-amber-bg); color: var(--state-amber); }
   .estado.entrega-entregado { background: var(--state-slate-bg); color: var(--state-slate); }
   .estado.pago-pendiente { background: var(--state-amber-bg); color: var(--state-amber); }
@@ -324,7 +346,9 @@
     .brand-container { width: 100%; justify-content: center; text-align: center; }
     nav { width: 100%; justify-content: space-between; }
     nav button { flex: 1; }
-    .resumen { flex-direction: column; text-align: center; padding: 1.5rem; }
+    .resumen-container { justify-content: center; }
+    .notification-pill { width: 100%; justify-content: center; border-radius: 12px; text-align: center; }
+    .pill-divider { display: none; }
     .filtros { flex-direction: column; }
     .filtros .campo, .filtros button { width: 100%; }
     .fila-doble { flex-direction: column; gap: 0; }
@@ -352,9 +376,13 @@
 <main>
   <!-- ===== HISTORIAL ===== -->
   <section id="vista-historial" class="vista activa">
-    <div class="resumen" id="resumen">
-      <div class="resumen-icono">☕</div>
-      <div>Cargando la información de tus pedidos...</div>
+    <!-- NUEVO CONTENEDOR DE LA PÍLDORA COMPACTA -->
+    <div class="resumen-container">
+      <div class="notification-pill" id="resumen">
+        <div class="pill-item">
+          <span>☕ Sincronizando datos...</span>
+        </div>
+      </div>
     </div>
 
     <div class="filtros">
@@ -595,11 +623,17 @@ function renderTabla(){
   const pendPago = pedidosCache.filter(p => p.status_pago === 'PENDIENTE');
   const montoPendiente = pendPago.reduce((s,p) => s + (Number(p.monto) || 0), 0);
   
+  // Renderizado optimizado para la nueva píldora compacta
   document.getElementById('resumen').innerHTML = `
-    <div class="resumen-icono">📊</div>
-    <div>Tienes <strong>${pendEntrega.length}</strong> pedidos por llegar y 
-    <strong>${pendPago.length}</strong> pendientes de pago 
-    (<strong>$${montoPendiente.toLocaleString('es-MX',{minimumFractionDigits:2})}</strong>).</div>
+    <div class="pill-item">
+      <span>🚚</span>
+      <span><strong>${pendEntrega.length}</strong> pedidos por llegar</span>
+    </div>
+    <div class="pill-divider"></div>
+    <div class="pill-item">
+      <span>💳</span>
+      <span><strong>${pendPago.length}</strong> pendientes (<span class="highlight-money">$${montoPendiente.toLocaleString('es-MX',{minimumFractionDigits:2})}</span>)</span>
+    </div>
   `;
 
   const tbody = document.getElementById('tabla-body');
