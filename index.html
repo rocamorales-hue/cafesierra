@@ -1,223 +1,519 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Café Sierra Escondida - Control de Pedidos</title>
-    <style>
-        :root {
-            --cafe-oscuro: #3b2818;
-            --cafe-claro: #d4a373;
-            --verde-acento: #588157;
-            --fondo: #fefae0;
-        }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--fondo); color: #333; margin: 0; padding: 20px; }
-        h1, h2 { color: var(--cafe-oscuro); text-align: center; }
-        .contenedor { max-width: 1000px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-        
-        .formulario { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 2px solid #eee; }
-        input, select { padding: 10px; border: 1px solid #ccc; border-radius: 5px; width: 100%; box-sizing: border-box; }
-        button { padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; transition: 0.3s; }
-        .btn-guardar { background-color: var(--verde-acento); color: white; grid-column: 1 / -1; font-size: 16px; }
-        .btn-guardar:hover { background-color: #3a5a39; }
-        
-        .filtros { display: flex; gap: 10px; margin-bottom: 15px; justify-content: center; }
-        .btn-filtro { background-color: #eee; color: #333; }
-        .btn-filtro.activo { background-color: var(--cafe-claro); color: white; }
-        
-        /* Contenedor responsivo para la tabla */
-        .tabla-responsiva { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
-        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #ddd; }
-        th { background-color: var(--cafe-oscuro); color: white; white-space: nowrap; }
-        
-        .btn-accion { font-size: 12px; padding: 5px 8px; margin: 2px; }
-        .btn-pagar { background-color: #e07a5f; color: white; }
-        .btn-llegar { background-color: #81b29a; color: white; }
-        
-        .estado-ok { font-weight: bold; color: var(--verde-acento); }
-        .estado-pendiente { font-weight: bold; color: #e07a5f; }
-        
-        #loading { text-align: center; font-weight: bold; color: var(--cafe-oscuro); display: none; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pedidos de café</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F3ECDD;
+    --surface:#FFFFFF;
+    --ink:#2B1B12;
+    --ink-soft:#6B5745;
+    --espresso:#3E2723;
+    --rust:#8C4A2F;
+    --rust-dark:#6E3A24;
+    --sage:#4F6F52;
+    --sage-bg:#E3EBE0;
+    --slate:#3E5C76;
+    --slate-bg:#E1E8EE;
+    --amber:#C98A2B;
+    --amber-bg:#F5E8CE;
+    --line:#D8C9AE;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --serif: "Source Serif 4", Georgia, serif;
+  }
+  *{ box-sizing:border-box; }
+  html{ scroll-padding-top: env(safe-area-inset-top,0px); }
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:var(--sans);
+    padding-top: env(safe-area-inset-top,0px);
+    padding-bottom: env(safe-area-inset-bottom,0px);
+  }
+  header{
+    background:var(--espresso);
+    color:var(--bg);
+    padding:1.1rem 1.25rem;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:.75rem;
+  }
+  header h1{
+    font-family:var(--serif);
+    font-size:1.35rem;
+    font-weight:700;
+    margin:0;
+    letter-spacing:.01em;
+  }
+  header p{
+    margin:.15rem 0 0;
+    font-size:.85rem;
+    color:#D8C9AE;
+  }
+  nav{ display:flex; gap:.5rem; }
+  nav button{
+    background:transparent;
+    border:1px solid rgba(243,236,221,.35);
+    color:var(--bg);
+    padding:.5rem 1rem;
+    border-radius:6px;
+    font-size:.9rem;
+    cursor:pointer;
+  }
+  nav button.active{
+    background:var(--bg);
+    color:var(--espresso);
+    border-color:var(--bg);
+    font-weight:600;
+  }
+  main{
+    max-width:960px;
+    margin:0 auto;
+    padding:1.5rem 1.25rem 3rem;
+  }
+  .vista{ display:none; }
+  .vista.activa{ display:block; }
+
+  /* --- Historial --- */
+  .resumen{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:.9rem 1.1rem;
+    margin-bottom:1rem;
+    font-size:.95rem;
+  }
+  .resumen strong{ color:var(--rust-dark); }
+  .filtros{
+    display:flex;
+    flex-wrap:wrap;
+    gap:.6rem;
+    margin-bottom:1rem;
+    align-items:end;
+  }
+  .campo{ display:flex; flex-direction:column; gap:.3rem; }
+  .campo label{ font-size:.78rem; color:var(--ink-soft); }
+  select, input[type=text], input[type=number], input[type=date]{
+    font-family:var(--sans);
+    font-size:.9rem;
+    padding:.5rem .6rem;
+    border:1px solid var(--line);
+    border-radius:6px;
+    background:var(--surface);
+    color:var(--ink);
+  }
+  select:focus, input:focus{ outline:2px solid var(--rust); outline-offset:1px; }
+  .btn{
+    font-family:var(--sans);
+    font-size:.88rem;
+    padding:.55rem 1rem;
+    border-radius:6px;
+    border:none;
+    cursor:pointer;
+    font-weight:600;
+  }
+  .btn-primario{ background:var(--rust); color:#fff; }
+  .btn-primario:hover{ background:var(--rust-dark); }
+  .btn-secundario{ background:var(--surface); color:var(--ink); border:1px solid var(--line); }
+  .btn-fila{ font-size:.78rem; padding:.35rem .6rem; border-radius:5px; border:none; cursor:pointer; margin-right:.35rem; white-space:nowrap; }
+  .btn-entregar{ background:var(--slate-bg); color:var(--slate); }
+  .btn-pagar{ background:var(--sage-bg); color:var(--sage); }
+
+  .tabla-envoltura{
+    overflow-x:auto;
+    border:1px solid var(--line);
+    border-radius:8px;
+    background:var(--surface);
+  }
+  table{ border-collapse:collapse; width:100%; font-size:.86rem; }
+  thead th{
+    text-align:left;
+    padding:.65rem .7rem;
+    background:#EDE3CD;
+    color:var(--espresso);
+    font-weight:600;
+    border-bottom:1px solid var(--line);
+    white-space:nowrap;
+  }
+  tbody td{
+    padding:.6rem .7rem;
+    border-bottom:1px solid #EFE7D6;
+    vertical-align:middle;
+  }
+  tbody tr:last-child td{ border-bottom:none; }
+  .num{ font-family:var(--mono); }
+  .estado{
+    display:inline-block;
+    padding:.15rem .55rem;
+    border-radius:20px;
+    font-size:.78rem;
+    font-weight:600;
+  }
+  .fila-en-camino .estado.entrega{ background:var(--amber-bg); color:var(--amber); }
+  .fila-entregado .estado.entrega{ background:var(--slate-bg); color:var(--slate); }
+  .fila-pagado .estado.entrega{ background:var(--slate-bg); color:var(--slate); }
+  .estado.pago-pendiente{ background:var(--amber-bg); color:var(--amber); }
+  .estado.pago-pagado{ background:var(--sage-bg); color:var(--sage); }
+  .estado-vacio{
+    padding:2rem 1rem;
+    text-align:center;
+    color:var(--ink-soft);
+    font-size:.9rem;
+  }
+
+  /* --- Formulario --- */
+  .formulario{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:1.5rem;
+    max-width:480px;
+  }
+  .formulario h2{
+    font-family:var(--serif);
+    font-size:1.15rem;
+    margin:0 0 1rem;
+    color:var(--espresso);
+  }
+  .formulario .campo{ margin-bottom:.9rem; width:100%; }
+  .formulario label{ font-size:.85rem; color:var(--ink-soft); margin-bottom:.25rem; }
+  .formulario select, .formulario input{ width:100%; }
+  .fila-doble{ display:flex; gap:.8rem; }
+  .fila-doble .campo{ flex:1; }
+  .check{ display:flex; align-items:center; gap:.5rem; margin:1rem 0; }
+  .check input{ width:auto; }
+  .check label{ font-size:.85rem; color:var(--ink); margin:0; }
+  #mensaje-form{ margin-top:.9rem; font-size:.88rem; }
+  #mensaje-form.ok{ color:var(--sage); }
+  #mensaje-form.error{ color:var(--rust-dark); }
+
+  @media (max-width:640px){
+    .fila-doble{ flex-direction:column; }
+    header{ flex-direction:column; align-items:flex-start; }
+  }
+</style>
 </head>
 <body>
 
-<div class="contenedor">
-    <h1>Control de Proveedores</h1>
-    
-    <!-- Sección de Registro -->
-    <h2>Nuevo Pedido</h2>
-    <form id="formPedido" class="formulario">
-        <input type="text" id="guias" placeholder="No. de Guías">
-        <select id="region" required>
-            <option value="">Región...</option>
-            <option value="Chiapas">Chiapas</option>
-            <option value="Oaxaca">Oaxaca</option>
-            <option value="Veracruz">Veracruz</option>
-        </select>
-        <input type="number" id="cantidad" placeholder="Cantidad (kg)" required>
-        <input type="text" id="descripcion" placeholder="Descripción (Ej. Tueste Medio)" required>
-        <input type="number" step="0.01" id="monto" placeholder="Monto Total ($)" required>
-        <button type="submit" class="btn-guardar">Registrar Pedido</button>
-    </form>
+<header>
+  <div>
+    <h1>Pedidos de café</h1>
+    <p>Chiapas · Veracruz</p>
+  </div>
+  <nav>
+    <button id="tab-historial" class="active">Historial</button>
+    <button id="tab-formulario">Nuevo pedido</button>
+  </nav>
+</header>
 
-    <!-- Sección de Historial -->
-    <h2>Historial de Pedidos</h2>
+<main>
+
+  <!-- ===== HISTORIAL ===== -->
+  <section id="vista-historial" class="vista activa">
+
+    <div class="resumen" id="resumen">Cargando pedidos…</div>
+
     <div class="filtros">
-        <button class="btn-filtro activo" onclick="filtrar('todos', this)">Todos</button>
-        <button class="btn-filtro" onclick="filtrar('pendientes_pago', this)">Falta Pagar</button>
-        <button class="btn-filtro" onclick="filtrar('en_camino', this)">En Camino</button>
+      <div class="campo">
+        <label for="f-region">Región</label>
+        <select id="f-region">
+          <option value="">Todas</option>
+          <option value="CHIAPAS">Chiapas</option>
+          <option value="VERACRUZ">Veracruz</option>
+        </select>
+      </div>
+      <div class="campo">
+        <label for="f-entrega">Entrega</label>
+        <select id="f-entrega">
+          <option value="">Todos</option>
+          <option value="PENDIENTE">En camino</option>
+          <option value="ENTREGADO">Entregado</option>
+        </select>
+      </div>
+      <div class="campo">
+        <label for="f-pago">Pago</label>
+        <select id="f-pago">
+          <option value="">Todos</option>
+          <option value="PENDIENTE">Pendiente</option>
+          <option value="PAGADO">Pagado</option>
+        </select>
+      </div>
+      <div class="campo" style="flex:1; min-width:160px;">
+        <label for="f-buscar">Buscar</label>
+        <input type="text" id="f-buscar" placeholder="folio, guía, descripción…">
+      </div>
+      <button class="btn btn-secundario" id="btn-refrescar">Actualizar</button>
     </div>
-    
-    <div id="loading">Cargando base de datos...</div>
-    
-    <div class="tabla-responsiva">
-        <table id="tablaPedidos">
-            <thead>
-                <tr>
-                    <th>Guías</th>
-                    <th>Región</th>
-                    <th>Cant (kg)</th>
-                    <th>Descripción</th>
-                    <th>Monto</th>
-                    <th>Entrega</th>
-                    <th>Pago</th>
-                    <th>Fecha de Pago</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody id="cuerpoTabla">
-                <!-- Los datos se inyectarán aquí -->
-            </tbody>
-        </table>
+
+    <div class="tabla-envoltura">
+      <table>
+        <thead>
+          <tr>
+            <th>Folio</th>
+            <th>Región</th>
+            <th>Guía / paquetería</th>
+            <th>Descripción</th>
+            <th>Kg</th>
+            <th>Monto</th>
+            <th>Entrega</th>
+            <th>Pago</th>
+            <th>Fecha pago</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="tabla-body"></tbody>
+      </table>
+      <div class="estado-vacio" id="estado-vacio" style="display:none;">No hay pedidos que coincidan con estos filtros.</div>
     </div>
-</div>
+  </section>
+
+  <!-- ===== FORMULARIO ===== -->
+  <section id="vista-formulario" class="vista">
+    <form class="formulario" id="form-pedido">
+      <h2>Registrar nuevo pedido</h2>
+
+      <div class="campo">
+        <label for="f-in-region">Región</label>
+        <select id="f-in-region" required>
+          <option value="CHIAPAS">Chiapas</option>
+          <option value="VERACRUZ">Veracruz</option>
+          <option value="OTRA">Otra</option>
+        </select>
+      </div>
+
+      <div class="fila-doble">
+        <div class="campo">
+          <label for="f-in-cantidad">Cantidad (kg)</label>
+          <input type="number" id="f-in-cantidad" step="0.1" min="0" required>
+        </div>
+        <div class="campo">
+          <label for="f-in-monto">Monto ($)</label>
+          <input type="number" id="f-in-monto" step="0.01" min="0" required>
+        </div>
+      </div>
+
+      <div class="campo">
+        <label for="f-in-descripcion">Descripción</label>
+        <input type="text" id="f-in-descripcion" placeholder="ej. MEZCLA ESP, MOLIDO KG">
+      </div>
+
+      <div class="fila-doble">
+        <div class="campo">
+          <label for="f-in-guia">Número de guía (si ya la tienes)</label>
+          <input type="text" id="f-in-guia">
+        </div>
+        <div class="campo">
+          <label for="f-in-paqueteria">Paquetería</label>
+          <select id="f-in-paqueteria">
+            <option value="">—</option>
+            <option value="PAQUETE EXPRESS">Paquete Express</option>
+            <option value="CORREOS MEXICO">Correos México</option>
+            <option value="ESTAFETA">Estafeta</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="check">
+        <input type="checkbox" id="f-in-cargo">
+        <label for="f-in-cargo">Es un cargo de envío, no un pedido de café</label>
+      </div>
+
+      <button type="submit" class="btn btn-primario">Guardar pedido</button>
+      <div id="mensaje-form"></div>
+    </form>
+  </section>
+
+</main>
 
 <script>
-    // URL actualizada con tu nuevo Web App de Google Apps Script
-    const API_URL = "https://script.google.com/macros/s/AKfycbz5-KEYl0JdLDrnzvYfpTyNjbJHQoa1WdukjWxrYEQv-H5KMqM3pECOSujlX7QXRWeJ/exec";
-    
-    let datosGlobales = [];
+const API_URL = "https://script.google.com/macros/s/AKfycbwESLMHq0qg9bz5glQX5zqCkOh5Fprpdpn1lpNNrdQwAobGQOlB8OW1GkETEx9j6Arf/exec";
 
-    async function cargarDatos() {
-        document.getElementById('loading').style.display = 'block';
-        document.getElementById('cuerpoTabla').innerHTML = '';
-        
-        try {
-            const respuesta = await fetch(API_URL);
-            datosGlobales = await respuesta.json();
-            renderizarTabla(datosGlobales);
-        } catch (error) {
-            console.error("Error:", error);
-            alert("Hubo un error al cargar los datos.");
-        } finally {
-            document.getElementById('loading').style.display = 'none';
-        }
+/* ---------- navegación entre pestañas ---------- */
+const tabHistorial = document.getElementById('tab-historial');
+const tabFormulario = document.getElementById('tab-formulario');
+const vistaHistorial = document.getElementById('vista-historial');
+const vistaFormulario = document.getElementById('vista-formulario');
+
+tabHistorial.addEventListener('click', () => cambiarVista('historial'));
+tabFormulario.addEventListener('click', () => cambiarVista('formulario'));
+
+function cambiarVista(nombre){
+  const esHistorial = nombre === 'historial';
+  tabHistorial.classList.toggle('active', esHistorial);
+  tabFormulario.classList.toggle('active', !esHistorial);
+  vistaHistorial.classList.toggle('activa', esHistorial);
+  vistaFormulario.classList.toggle('activa', !esHistorial);
+}
+
+/* ---------- historial ---------- */
+let pedidosCache = [];
+
+async function cargarHistorial(){
+  document.getElementById('resumen').textContent = 'Cargando pedidos…';
+  try{
+    const res = await fetch(API_URL);
+    const data = await res.json();
+    if(!data.ok) throw new Error(data.error || 'Error desconocido');
+    pedidosCache = data.pedidos.filter(p => p.tipo_registro !== 'CARGO_ENVIO');
+    renderTabla();
+  }catch(err){
+    document.getElementById('resumen').textContent = 'No se pudo cargar el historial: ' + err.message;
+  }
+}
+
+function renderTabla(){
+  const region = document.getElementById('f-region').value;
+  const entrega = document.getElementById('f-entrega').value;
+  const pago = document.getElementById('f-pago').value;
+  const busqueda = document.getElementById('f-buscar').value.trim().toLowerCase();
+
+  let filtrados = pedidosCache.filter(p => {
+    if(region && p.region !== region) return false;
+    if(entrega && p.status_entrega !== entrega) return false;
+    if(pago && p.status_pago !== pago) return false;
+    if(busqueda){
+      const texto = [p.folio, p.guia, p.paqueteria, p.descripcion].join(' ').toLowerCase();
+      if(!texto.includes(busqueda)) return false;
     }
+    return true;
+  });
 
-    function renderizarTabla(datos) {
-        const tbody = document.getElementById('cuerpoTabla');
-        tbody.innerHTML = '';
-        
-        datos.forEach(fila => {
-            const entrega = fila['STATUS DE ENTREGA'] || '-';
-            const pago = fila['STATUS DE PAGO'] || '-';
-            let fechaPagoText = fila['FECHA DE PAGO'] ? fila['FECHA DE PAGO'] : '---';
+  filtrados.sort((a,b) => Number(b.folio) - Number(a.folio));
 
-            if(fechaPagoText.includes('T')) {
-                fechaPagoText = new Date(fechaPagoText).toLocaleDateString('es-MX');
-            }
-            
-            let tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td>${fila['GUIAS'] || '-'}</td>
-                <td>${fila['REGION'] || '-'}</td>
-                <td>${fila['CANTIDAD (KG)'] || 0}</td>
-                <td>${fila['DESCRIPCION'] || '-'}</td>
-                <td>$${fila['MONTO'] || 0}</td>
-                <td class="${entrega === 'Entregado' ? 'estado-ok' : 'estado-pendiente'}">${entrega}</td>
-                <td class="${pago === 'Pagado' ? 'estado-ok' : 'estado-pendiente'}">${pago}</td>
-                <td>${fechaPagoText}</td>
-                <td>
-                    ${pago !== 'Pagado' ? `<button class="btn-accion btn-pagar" onclick="actualizarFila(${fila.filaExcel}, 'pagar')">💰 Pagar</button>` : ''}
-                    ${entrega !== 'Entregado' ? `<button class="btn-accion btn-llegar" onclick="actualizarFila(${fila.filaExcel}, 'llegar')">📦 Llegó</button>` : ''}
-                </td>
-            `;
-            tbody.appendChild(tr);
-        });
+  const pendEntrega = pedidosCache.filter(p => p.status_entrega === 'PENDIENTE');
+  const pendPago = pedidosCache.filter(p => p.status_pago === 'PENDIENTE');
+  const montoPendiente = pendPago.reduce((s,p) => s + (Number(p.monto) || 0), 0);
+  document.getElementById('resumen').innerHTML =
+    `Tienes <strong>${pendEntrega.length}</strong> pedidos por llegar y ` +
+    `<strong>${pendPago.length}</strong> pendientes de pago ` +
+    `(<strong>$${montoPendiente.toLocaleString('es-MX',{minimumFractionDigits:2})}</strong>).`;
+
+  const tbody = document.getElementById('tabla-body');
+  const vacio = document.getElementById('estado-vacio');
+  tbody.innerHTML = '';
+
+  if(filtrados.length === 0){
+    vacio.style.display = 'block';
+    return;
+  }
+  vacio.style.display = 'none';
+
+  filtrados.forEach(p => {
+    const tr = document.createElement('tr');
+    tr.className = claseFila(p);
+
+    const monto = Number(p.monto || 0).toLocaleString('es-MX', {minimumFractionDigits:2});
+    const guiaTexto = p.guia || p.paqueteria || '—';
+    const claseEstadoPago = p.status_pago === 'PAGADO' ? 'pago-pagado' : 'pago-pendiente';
+    const textoEntrega = p.status_entrega === 'ENTREGADO' ? 'Entregado' : 'En camino';
+    const textoPago = p.status_pago === 'PAGADO' ? 'Pagado' : 'Pendiente';
+
+    tr.innerHTML = `
+      <td class="num">${p.folio}</td>
+      <td>${p.region || ''}</td>
+      <td>${guiaTexto}</td>
+      <td>${p.descripcion || ''}</td>
+      <td class="num">${p.cantidad_kg || ''}</td>
+      <td class="num">$${monto}</td>
+      <td><span class="estado entrega">${textoEntrega}</span></td>
+      <td><span class="estado ${claseEstadoPago}">${textoPago}</span></td>
+      <td>${p.fecha_pago || ''}</td>
+      <td class="acciones"></td>
+    `;
+
+    const celdaAcciones = tr.querySelector('.acciones');
+    if(p.status_entrega === 'PENDIENTE'){
+      const btn = document.createElement('button');
+      btn.className = 'btn-fila btn-entregar';
+      btn.textContent = 'Marcar entregado';
+      btn.onclick = () => actualizarPedido(p.folio, {status_entrega:'ENTREGADO'});
+      celdaAcciones.appendChild(btn);
     }
+    if(p.status_pago === 'PENDIENTE'){
+      const btn = document.createElement('button');
+      btn.className = 'btn-fila btn-pagar';
+      btn.textContent = 'Marcar pagado';
+      btn.onclick = () => actualizarPedido(p.folio, {status_pago:'PAGADO', fecha_pago: hoyISO()});
+      celdaAcciones.appendChild(btn);
+    }
+    tbody.appendChild(tr);
+  });
+}
 
-    document.getElementById('formPedido').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const boton = e.target.querySelector('button');
-        boton.innerText = "Guardando...";
-        
-        const nuevoPedido = {
-            accion: "nuevo",
-            guias: document.getElementById('guias').value,
-            region: document.getElementById('region').value,
-            cantidad: document.getElementById('cantidad').value,
-            descripcion: document.getElementById('descripcion').value,
-            monto: document.getElementById('monto').value
-        };
+function claseFila(p){
+  if(p.status_pago === 'PAGADO') return 'fila-pagado';
+  if(p.status_entrega === 'ENTREGADO') return 'fila-entregado';
+  return 'fila-en-camino';
+}
 
-        try {
-            await fetch(API_URL, {
-                method: 'POST',
-                mode: 'no-cors',
-                headers: { "Content-Type": "text/plain;charset=utf-8" },
-                body: JSON.stringify(nuevoPedido)
-            });
-        } catch (error) {
-            console.error("Error al guardar:", error);
-        }
-        
-        e.target.reset();
-        boton.innerText = "Registrar Pedido";
-        setTimeout(cargarDatos, 1500); 
+function hoyISO(){ return new Date().toISOString().slice(0,10); }
+
+async function actualizarPedido(folio, cambios){
+  try{
+    const res = await fetch(API_URL, {
+      method:'POST',
+      headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body: JSON.stringify({action:'actualizar', folio, cambios})
     });
+    const data = await res.json();
+    if(!data.ok) throw new Error(data.error || 'Error desconocido');
+    cargarHistorial();
+  }catch(err){
+    alert('No se pudo actualizar el pedido: ' + err.message);
+  }
+}
 
-    async function actualizarFila(filaExcel, accion) {
-        document.getElementById('loading').innerText = "Actualizando...";
-        document.getElementById('loading').style.display = 'block';
+['f-region','f-entrega','f-pago'].forEach(id =>
+  document.getElementById(id).addEventListener('change', renderTabla));
+document.getElementById('f-buscar').addEventListener('input', renderTabla);
+document.getElementById('btn-refrescar').addEventListener('click', cargarHistorial);
 
-        const payload = { accion: accion, filaExcel: filaExcel };
+/* ---------- formulario ---------- */
+document.getElementById('form-pedido').addEventListener('submit', async function(e){
+  e.preventDefault();
+  const mensaje = document.getElementById('mensaje-form');
+  mensaje.className = '';
+  mensaje.textContent = 'Guardando…';
 
-        try {
-            await fetch(API_URL, {
-                method: 'POST',
-                mode: 'no-cors',
-                headers: { "Content-Type": "text/plain;charset=utf-8" },
-                body: JSON.stringify(payload)
-            });
-        } catch (error) {
-            console.error("Error al actualizar:", error);
-        }
-        
-        setTimeout(() => {
-            document.getElementById('loading').innerText = "Cargando base de datos...";
-            cargarDatos(); 
-        }, 1500);
-    }
+  const pedido = {
+    region: document.getElementById('f-in-region').value,
+    cantidad_kg: parseFloat(document.getElementById('f-in-cantidad').value) || null,
+    monto: parseFloat(document.getElementById('f-in-monto').value) || null,
+    descripcion: document.getElementById('f-in-descripcion').value,
+    guia: document.getElementById('f-in-guia').value,
+    paqueteria: document.getElementById('f-in-paqueteria').value,
+    tipo_registro: document.getElementById('f-in-cargo').checked ? 'CARGO_ENVIO' : 'PEDIDO'
+  };
 
-    function filtrar(tipo, elemento) {
-        document.querySelectorAll('.btn-filtro').forEach(b => b.classList.remove('activo'));
-        elemento.classList.add('activo');
+  try{
+    const res = await fetch(API_URL, {
+      method:'POST',
+      headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body: JSON.stringify({action:'crear', pedido})
+    });
+    const data = await res.json();
+    if(!data.ok) throw new Error(data.error || 'Error desconocido');
+    mensaje.className = 'ok';
+    mensaje.textContent = `Guardado como folio #${data.folio}.`;
+    this.reset();
+    cargarHistorial();
+  }catch(err){
+    mensaje.className = 'error';
+    mensaje.textContent = 'No se pudo guardar: ' + err.message;
+  }
+});
 
-        let filtrados = [];
-        if (tipo === 'todos') {
-            filtrados = datosGlobales;
-        } else if (tipo === 'pendientes_pago') {
-            filtrados = datosGlobales.filter(f => f['STATUS DE PAGO'] !== 'Pagado');
-        } else if (tipo === 'en_camino') {
-            filtrados = datosGlobales.filter(f => f['STATUS DE ENTREGA'] !== 'Entregado');
-        }
-        
-        renderizarTabla(filtrados);
-    }
-    
-    cargarDatos();
+/* ---------- carga inicial ---------- */
+cargarHistorial();
 </script>
 
 </body>
