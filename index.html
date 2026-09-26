@@ -6,25 +6,23 @@
 <title>Café Sierra Escondida - Pedidos</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<!-- Tipografías modernas: Montserrat para títulos y marca, Inter para datos -->
+<!-- Tipografías: Montserrat (Títulos) e Inter (Datos) -->
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@500;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
-    /* Paleta de la marca */
     --brand-orange: #F3A022;
     --brand-orange-dark: #D98918;
     --brand-green: #0F6343;
     --brand-dark: #1C1C1C;
     
-    --bg: #F5F7FA;
+    --bg: #F8FAFC;
     --surface: #FFFFFF;
-    --ink: #333333;
-    --ink-soft: #666666;
+    --ink: #1E293B;
+    --ink-soft: #64748B;
     
     --line: #E2E8F0;
-    --shadow: rgba(0, 0, 0, 0.05);
+    --shadow: rgba(15, 23, 42, 0.08);
     
-    /* Estados */
     --state-amber: #B45309;
     --state-amber-bg: #FEF3C7;
     --state-slate: #0F766E;
@@ -38,33 +36,31 @@
   }
   
   * { box-sizing: border-box; }
-  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
   
   body {
     margin: 0;
     background: var(--bg);
     color: var(--ink);
     font-family: var(--sans);
-    padding-top: env(safe-area-inset-top, 0px);
-    padding-bottom: env(safe-area-inset-bottom, 0px);
     -webkit-font-smoothing: antialiased;
   }
 
-  /* --- Header / Navegación Moderno --- */
+  /* --- Header Estilo "Glassmorphism" --- */
   header {
-    background: var(--surface);
-    color: var(--ink);
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     padding: 1rem 2rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
     flex-wrap: wrap;
     gap: 1.5rem;
-    box-shadow: 0 4px 20px var(--shadow);
-    border-bottom: 1px solid var(--line);
+    border-bottom: 1px solid rgba(226, 232, 240, 0.6);
     position: sticky;
     top: 0;
     z-index: 100;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.03);
   }
   
   .brand-container {
@@ -73,11 +69,7 @@
     gap: 1.2rem;
   }
   
-  .logo {
-    max-height: 65px;
-    width: auto;
-    object-fit: contain;
-  }
+  .logo { max-height: 65px; width: auto; object-fit: contain; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.05)); }
   
   header h1 {
     font-family: var(--display);
@@ -90,14 +82,15 @@
   
   header p {
     margin: 0.15rem 0 0;
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     color: var(--ink-soft);
-    font-weight: 500;
+    font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.1em;
   }
   
-  nav { display: flex; gap: 0.5rem; }
+  /* --- Navegación Animada --- */
+  nav { display: flex; gap: 0.5rem; background: var(--bg); padding: 0.3rem; border-radius: 12px; border: 1px solid var(--line); }
   nav button {
     background: transparent;
     border: none;
@@ -106,52 +99,40 @@
     border-radius: 8px;
     font-size: 0.95rem;
     font-weight: 600;
-    font-family: var(--sans);
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
-  nav button:hover {
-    background: var(--bg);
-    color: var(--brand-green);
-  }
-  nav button.active {
-    background: var(--brand-green);
-    color: white;
-  }
+  nav button:hover:not(.active) { color: var(--brand-green); background: rgba(15, 99, 67, 0.05); }
+  nav button.active { background: var(--surface); color: var(--brand-green); box-shadow: 0 2px 8px var(--shadow); }
 
   /* --- Layout principal --- */
-  main {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 2rem 1.5rem 4rem;
-  }
-  .vista { display: none; animation: fadeIn 0.3s ease; }
-  .vista.activa { display: block; }
+  main { max-width: 1200px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+  .vista { display: none; opacity: 0; transform: translateY(10px); transition: all 0.4s ease-out; }
+  .vista.activa { display: block; opacity: 1; transform: translateY(0); }
 
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(5px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  /* --- Historial --- */
+  /* --- Tarjeta Resumen Premium --- */
   .resumen {
-    background: linear-gradient(135deg, var(--brand-green), #147a53);
+    background: linear-gradient(135deg, var(--brand-green) 0%, #0d4f35 100%);
     color: white;
-    border-radius: 12px;
-    padding: 1.2rem 1.5rem;
-    margin-bottom: 1.5rem;
-    font-size: 1.05rem;
-    box-shadow: 0 8px 16px rgba(15, 99, 67, 0.15);
+    border-radius: 16px;
+    padding: 1.5rem 2rem;
+    margin-bottom: 2rem;
+    font-size: 1.1rem;
+    box-shadow: 0 10px 25px rgba(15, 99, 67, 0.2);
     font-family: var(--display);
-    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
   }
-  .resumen strong { color: var(--brand-orange); font-weight: 800; }
+  .resumen-icono { font-size: 2rem; background: rgba(255,255,255,0.15); padding: 0.8rem; border-radius: 12px; }
+  .resumen strong { color: var(--brand-orange); font-weight: 800; font-size: 1.2rem; }
   
+  /* --- Filtros Modernos --- */
   .filtros {
     background: var(--surface);
     padding: 1.2rem;
-    border-radius: 12px;
-    box-shadow: 0 2px 12px var(--shadow);
+    border-radius: 16px;
+    box-shadow: 0 4px 15px var(--shadow);
     display: flex;
     flex-wrap: wrap;
     gap: 1rem;
@@ -160,174 +141,192 @@
     border: 1px solid var(--line);
   }
   
-  .campo { display: flex; flex-direction: column; gap: 0.4rem; }
+  .campo { display: flex; flex-direction: column; gap: 0.5rem; }
   .campo label { font-size: 0.85rem; color: var(--ink-soft); font-weight: 600; }
   
-  select, input[type=text], input[type=number], input[type=date] {
+  select, input[type=text], input[type=number] {
     font-family: var(--sans);
     font-size: 0.95rem;
-    padding: 0.6rem 0.8rem;
-    border: 1px solid #CBD5E1;
-    border-radius: 8px;
-    background: var(--surface);
+    padding: 0.7rem 1rem;
+    border: 2px solid #E2E8F0;
+    border-radius: 10px;
+    background: #F8FAFC;
     color: var(--ink);
-    transition: all 0.2s;
+    transition: all 0.3s ease;
   }
   select:focus, input:focus { 
     outline: none; 
     border-color: var(--brand-green); 
-    box-shadow: 0 0 0 3px rgba(15, 99, 67, 0.15);
+    background: var(--surface);
+    box-shadow: 0 0 0 4px rgba(15, 99, 67, 0.1);
   }
   
+  /* --- Botones --- */
   .btn {
     font-family: var(--sans);
     font-size: 0.95rem;
-    padding: 0.65rem 1.2rem;
-    border-radius: 8px;
+    padding: 0.7rem 1.5rem;
+    border-radius: 10px;
     border: none;
     cursor: pointer;
     font-weight: 600;
-    transition: all 0.2s ease;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   }
-  .btn-primario { background: var(--brand-orange); color: var(--brand-dark); }
-  .btn-primario:hover { background: var(--brand-orange-dark); transform: translateY(-1px); }
+  .btn:active { transform: scale(0.95); }
   
-  .btn-secundario { background: var(--bg); color: var(--ink); border: 1px solid #CBD5E1; }
-  .btn-secundario:hover { background: #E2E8F0; }
+  .btn-primario { background: var(--brand-orange); color: var(--brand-dark); box-shadow: 0 4px 12px rgba(243, 160, 34, 0.3); }
+  .btn-primario:hover { background: #FBBF24; box-shadow: 0 6px 16px rgba(243, 160, 34, 0.4); transform: translateY(-2px); }
   
-  /* --- Tabla --- */
+  .btn-secundario { background: var(--surface); color: var(--ink); border: 2px solid #E2E8F0; }
+  .btn-secundario:hover { border-color: var(--ink-soft); background: #F1F5F9; }
+  
+  /* --- Tabla Mejorada --- */
   .tabla-envoltura {
     overflow-x: auto;
     border: 1px solid var(--line);
-    border-radius: 12px;
+    border-radius: 16px;
     background: var(--surface);
-    box-shadow: 0 4px 20px var(--shadow);
+    box-shadow: 0 10px 30px var(--shadow);
   }
-  .tabla-envoltura::-webkit-scrollbar { height: 8px; }
-  .tabla-envoltura::-webkit-scrollbar-track { background: var(--bg); }
-  .tabla-envoltura::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 4px; }
   
-  table { border-collapse: collapse; width: 100%; font-size: 0.9rem; text-align: left; }
+  table { border-collapse: collapse; width: 100%; font-size: 0.95rem; text-align: left; }
   thead th {
-    padding: 1rem;
-    background: #F8FAFC;
+    padding: 1.2rem 1rem;
+    background: rgba(248, 250, 252, 0.8);
+    backdrop-filter: blur(4px);
     color: var(--ink-soft);
-    font-weight: 600;
+    font-weight: 700;
     border-bottom: 2px solid var(--line);
     white-space: nowrap;
     font-family: var(--display);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
   }
-  tbody td {
-    padding: 1rem;
-    border-bottom: 1px solid var(--line);
-    vertical-align: middle;
-  }
+  tbody td { padding: 1.2rem 1rem; border-bottom: 1px solid var(--line); vertical-align: middle; transition: background 0.3s; }
+  tbody tr { transition: all 0.3s; }
   tbody tr:hover td { background-color: #F8FAFC; }
   tbody tr:last-child td { border-bottom: none; }
   
-  .num { font-family: var(--mono); font-weight: 500; color: var(--ink-soft); }
+  .num { font-family: var(--mono); font-weight: 600; color: var(--ink-soft); }
+  .col-desc { min-width: 280px; line-height: 1.5; font-weight: 500; }
   
-  /* Más espacio para la descripción */
-  .col-desc { min-width: 280px; white-space: normal; line-height: 1.4; }
+  /* Animación flash para cuando se actualiza una fila */
+  @keyframes rowUpdate {
+    0% { background-color: rgba(15, 99, 67, 0.15); }
+    100% { background-color: transparent; }
+  }
+  .fila-actualizada td { animation: rowUpdate 1s ease; }
 
-  /* --- Estados (Clickables) --- */
+  /* --- Estados (Clickables UI) --- */
   .estado {
-    display: inline-block;
-    padding: 0.35rem 0.8rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.4rem 1rem;
     border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: 600;
+    font-size: 0.85rem;
+    font-weight: 700;
     font-family: var(--sans);
     user-select: none;
+    letter-spacing: 0.02em;
   }
   
-  /* Clase para animar los estados clickeables */
   .estado.interactivo { 
     cursor: pointer; 
-    transition: transform 0.1s, opacity 0.2s, box-shadow 0.2s; 
-    border: 1px solid transparent;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
   }
-  .estado.interactivo:hover { 
-    transform: scale(1.05); 
-    opacity: 0.9; 
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1); 
-  }
+  .estado.interactivo:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 4px 10px rgba(0,0,0,0.1); filter: brightness(1.05); }
   .estado.interactivo:active { transform: scale(0.95); }
 
-  .fila-en-camino .estado.entrega { background: var(--state-amber-bg); color: var(--state-amber); border-color: #FDE68A; }
-  .fila-entregado .estado.entrega { background: var(--state-slate-bg); color: var(--state-slate); border-color: #99F6E4; }
-  
-  .estado.pago-pendiente { background: var(--state-amber-bg); color: var(--state-amber); border-color: #FDE68A; }
-  .estado.pago-pagado { background: var(--state-sage-bg); color: var(--state-sage); border-color: #BBF7D0; }
-  
-  .estado-vacio {
-    padding: 4rem 1rem;
-    text-align: center;
-    color: var(--ink-soft);
-    font-size: 1rem;
-    font-weight: 500;
-  }
+  /* Colores de estados */
+  .estado.entrega-pendiente { background: var(--state-amber-bg); color: var(--state-amber); }
+  .estado.entrega-entregado { background: var(--state-slate-bg); color: var(--state-slate); }
+  .estado.pago-pendiente { background: var(--state-amber-bg); color: var(--state-amber); }
+  .estado.pago-pagado { background: var(--state-sage-bg); color: var(--state-sage); }
 
   /* --- Formulario --- */
-  .formulario-container {
-    display: flex;
-    justify-content: center;
-  }
+  .formulario-container { display: flex; justify-content: center; }
   .formulario {
     background: var(--surface);
     border: 1px solid var(--line);
-    border-radius: 16px;
-    padding: 2.5rem;
+    border-radius: 20px;
+    padding: 2.5rem 3rem;
     width: 100%;
-    max-width: 600px;
-    box-shadow: 0 8px 30px var(--shadow);
+    max-width: 650px;
+    box-shadow: 0 20px 40px var(--shadow);
   }
   .formulario h2 {
     font-family: var(--display);
-    font-size: 1.6rem;
-    margin: 0 0 1.5rem;
+    font-size: 1.8rem;
+    margin: 0 0 2rem;
     color: var(--brand-green);
-    border-bottom: 3px solid var(--brand-orange);
+    border-bottom: 4px solid var(--brand-orange);
     padding-bottom: 0.5rem;
     display: inline-block;
   }
-  .formulario .campo { margin-bottom: 1.2rem; width: 100%; }
-  .formulario select, .formulario input { width: 100%; padding: 0.7rem 0.8rem; }
+  .formulario .campo { margin-bottom: 1.5rem; width: 100%; }
+  .formulario select, .formulario input { width: 100%; }
   
-  .fila-doble { display: flex; gap: 1rem; }
+  .fila-doble { display: flex; gap: 1.5rem; }
   .fila-doble .campo { flex: 1; }
   
   .check { 
-    display: flex; 
-    align-items: center; 
-    gap: 0.5rem; 
-    margin: 1.5rem 0; 
-    padding: 1rem;
-    background: var(--bg);
-    border-radius: 8px;
-    border: 1px solid var(--line);
+    display: flex; align-items: center; gap: 0.8rem; 
+    margin: 2rem 0; padding: 1.2rem;
+    background: #F8FAFC; border-radius: 12px; border: 2px solid var(--line);
+    transition: all 0.3s;
   }
-  .check input { width: auto; transform: scale(1.3); accent-color: var(--brand-green); cursor: pointer; }
-  .check label { font-size: 0.95rem; color: var(--ink); margin: 0; font-weight: 500; cursor: pointer; }
+  .check:hover { border-color: var(--brand-green); }
+  .check input { width: 20px; height: 20px; accent-color: var(--brand-green); cursor: pointer; }
+  .check label { font-size: 1rem; color: var(--ink); margin: 0; font-weight: 600; cursor: pointer; }
   
-  .formulario .btn-primario { width: 100%; padding: 0.9rem; font-size: 1.05rem; }
-  
-  #mensaje-form { margin-top: 1.2rem; font-size: 0.95rem; text-align: center; font-weight: 600; }
-  #mensaje-form.ok { color: var(--brand-green); }
-  #mensaje-form.error { color: #DC2626; }
+  .formulario .btn-primario { width: 100%; padding: 1rem; font-size: 1.1rem; border-radius: 12px; }
 
-  /* --- Responsive --- */
+  /* --- Sistema de Toasts (Notificaciones) --- */
+  .toast-container {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    pointer-events: none;
+  }
+  .toast {
+    background: var(--surface);
+    color: var(--ink);
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 600;
+    font-family: var(--sans);
+    transform: translateX(120%);
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border-left: 5px solid var(--brand-green);
+  }
+  .toast.show { transform: translateX(0); opacity: 1; }
+  .toast.error { border-left-color: #EF4444; }
+  .toast.info { border-left-color: var(--brand-orange); }
+
+  /* Responsive */
   @media (max-width: 768px) {
-    header { flex-direction: column; align-items: flex-start; padding: 1rem 1.5rem; gap: 1rem; }
-    .brand-container { margin-bottom: 0; }
-    nav { width: 100%; overflow-x: auto; padding-bottom: 0.5rem; justify-content: space-between; }
-    nav button { flex: 1; white-space: nowrap; text-align: center; }
-    
-    .filtros { flex-direction: column; align-items: stretch; }
-    .filtros .campo { width: 100%; }
-    
+    header { padding: 1rem; justify-content: center; }
+    .brand-container { width: 100%; justify-content: center; text-align: center; }
+    nav { width: 100%; justify-content: space-between; }
+    nav button { flex: 1; }
+    .resumen { flex-direction: column; text-align: center; }
+    .filtros { flex-direction: column; }
+    .filtros .campo, .filtros button { width: 100%; }
     .fila-doble { flex-direction: column; gap: 0; }
     .formulario { padding: 1.5rem; }
+    .toast-container { bottom: 1rem; right: 1rem; left: 1rem; }
   }
 </style>
 </head>
@@ -335,7 +334,6 @@
 
 <header>
   <div class="brand-container">
-    <!-- Se mantiene el nombre exacto de tu archivo -->
     <img src="logo con colores sin fondo.jpg" alt="Café Sierra Escondida Logo" class="logo" onerror="this.style.display='none'">
     <div>
       <h1>Café Sierra Escondida</h1>
@@ -349,25 +347,25 @@
 </header>
 
 <main>
-
   <!-- ===== HISTORIAL ===== -->
   <section id="vista-historial" class="vista activa">
-
-    <div class="resumen" id="resumen">Cargando pedidos…</div>
+    <div class="resumen" id="resumen">
+      <div class="resumen-icono">☕</div>
+      <div>Cargando la información de tus pedidos...</div>
+    </div>
 
     <div class="filtros">
       <div class="campo">
-        <label for="f-region">Región</label>
+        <label>Región</label>
         <select id="f-region">
           <option value="">Todas</option>
           <option value="CHIAPAS">Chiapas</option>
           <option value="VERACRUZ">Veracruz</option>
-          <!-- Nueva región Oaxaca agregada -->
           <option value="OAXACA">Oaxaca</option>
         </select>
       </div>
       <div class="campo">
-        <label for="f-entrega">Entrega</label>
+        <label>Entrega</label>
         <select id="f-entrega">
           <option value="">Todos</option>
           <option value="PENDIENTE">En camino</option>
@@ -375,7 +373,7 @@
         </select>
       </div>
       <div class="campo">
-        <label for="f-pago">Pago</label>
+        <label>Pago</label>
         <select id="f-pago">
           <option value="">Todos</option>
           <option value="PENDIENTE">Pendiente</option>
@@ -383,8 +381,8 @@
         </select>
       </div>
       <div class="campo" style="flex:1; min-width:200px;">
-        <label for="f-buscar">Buscar</label>
-        <input type="text" id="f-buscar" placeholder="Folio, guía, descripción…">
+        <label>Buscar pedido</label>
+        <input type="text" id="f-buscar" placeholder="Ej. Folio 701, Paquete Express...">
       </div>
       <button class="btn btn-secundario" id="btn-refrescar">Actualizar</button>
     </div>
@@ -406,7 +404,9 @@
         </thead>
         <tbody id="tabla-body"></tbody>
       </table>
-      <div class="estado-vacio" id="estado-vacio" style="display:none;">No hay pedidos que coincidan con estos filtros.</div>
+      <div style="padding: 3rem; text-align: center; color: var(--ink-soft); display: none;" id="estado-vacio">
+        No hay pedidos que coincidan con tu búsqueda.
+      </div>
     </div>
   </section>
 
@@ -417,11 +417,10 @@
         <h2>Registrar nuevo pedido</h2>
 
         <div class="campo">
-          <label for="f-in-region">Región</label>
+          <label>Región de origen</label>
           <select id="f-in-region" required>
             <option value="CHIAPAS">Chiapas</option>
             <option value="VERACRUZ">Veracruz</option>
-            <!-- Nueva región Oaxaca agregada -->
             <option value="OAXACA">Oaxaca</option>
             <option value="OTRA">Otra</option>
           </select>
@@ -429,29 +428,29 @@
 
         <div class="fila-doble">
           <div class="campo">
-            <label for="f-in-cantidad">Cantidad (kg)</label>
+            <label>Cantidad (kg)</label>
             <input type="number" id="f-in-cantidad" step="0.1" min="0" required>
           </div>
           <div class="campo">
-            <label for="f-in-monto">Monto ($)</label>
+            <label>Monto total ($)</label>
             <input type="number" id="f-in-monto" step="0.01" min="0" required>
           </div>
         </div>
 
         <div class="campo">
-          <label for="f-in-descripcion">Descripción</label>
-          <input type="text" id="f-in-descripcion" placeholder="ej. MEZCLA ESP, MOLIDO KG">
+          <label>Descripción detallada</label>
+          <input type="text" id="f-in-descripcion" placeholder="Ej. 20 costales de café molido regular">
         </div>
 
         <div class="fila-doble">
           <div class="campo">
-            <label for="f-in-guia">Número de guía (opcional)</label>
+            <label>Número de guía (opcional)</label>
             <input type="text" id="f-in-guia">
           </div>
           <div class="campo">
-            <label for="f-in-paqueteria">Paquetería</label>
+            <label>Paquetería</label>
             <select id="f-in-paqueteria">
-              <option value="">—</option>
+              <option value="">— Ninguna —</option>
               <option value="PAQUETE EXPRESS">Paquete Express</option>
               <option value="CORREOS MEXICO">Correos México</option>
               <option value="ESTAFETA">Estafeta</option>
@@ -461,67 +460,117 @@
 
         <div class="check">
           <input type="checkbox" id="f-in-cargo">
-          <label for="f-in-cargo">Es un cargo de envío, no un pedido de café</label>
+          <label for="f-in-cargo">Marcar como cargo de envío (No suma kg de café)</label>
         </div>
 
-        <button type="submit" class="btn btn-primario">Guardar pedido</button>
-        <div id="mensaje-form"></div>
+        <button type="submit" class="btn btn-primario">Guardar pedido de forma segura</button>
       </form>
     </div>
   </section>
-
 </main>
+
+<!-- Contenedor para Notificaciones -->
+<div id="toast-container" class="toast-container"></div>
 
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbwESLMHq0qg9bz5glQX5zqCkOh5Fprpdpn1lpNNrdQwAobGQOlB8OW1GkETEx9j6Arf/exec";
 
-/* ---------- Formateador de Fecha dd/mmm/aaaa ---------- */
-function formatearFecha(fechaIso) {
-  if (!fechaIso) return '';
-  // Se asume formato YYYY-MM-DD
-  const partes = fechaIso.split('-');
-  if(partes.length !== 3) return fechaIso;
+/* ---------- Sistema de Notificaciones (Toasts) ---------- */
+function mostrarToast(mensaje, tipo = 'exito') {
+  const container = document.getElementById('toast-container');
+  const toast = document.createElement('div');
+  toast.className = `toast ${tipo}`;
   
-  // Usamos los números del string para evitar problemas de zona horaria (UTC vs Local)
-  const fechaObj = new Date(partes[0], partes[1] - 1, partes[2]);
+  let icono = '✅';
+  if (tipo === 'error') icono = '❌';
+  if (tipo === 'info') icono = '⏳';
   
-  const opciones = { day: '2-digit', month: 'short', year: 'numeric' };
-  // Genera algo como "26 sep 2026", luego reemplazamos espacios por "/"
-  let formateada = fechaObj.toLocaleDateString('es-MX', opciones).replace(/\./g, ''); 
-  // Convertimos "26 sep 2026" a "26/sep/2026"
-  return formateada.split(' ').join('/');
+  toast.innerHTML = `<span style="font-size:1.3rem;">${icono}</span> <span>${mensaje}</span>`;
+  container.appendChild(toast);
+  
+  // Animar entrada
+  setTimeout(() => toast.classList.add('show'), 10);
+  
+  // Animar salida y remover
+  setTimeout(() => {
+    toast.classList.remove('show');
+    setTimeout(() => toast.remove(), 400); // Esperar a que termine CSS transition
+  }, 3500);
 }
 
-/* ---------- navegación entre pestañas ---------- */
+/* ---------- Formateador de Fecha dd/mmm/aaaa (ROBUSTO) ---------- */
+function formatearFecha(fechaIso) {
+  if (!fechaIso) return '';
+  try {
+    // Extraemos solo la parte de la fecha ignorando la hora (separada por T o espacio)
+    const soloFecha = String(fechaIso).trim().split(/[T ]/)[0];
+    const partes = soloFecha.split('-');
+    
+    if(partes.length !== 3) return fechaIso;
+    
+    const año = parseInt(partes[0], 10);
+    const mes = parseInt(partes[1], 10) - 1;
+    const dia = parseInt(partes[2], 10);
+    
+    const fechaObj = new Date(año, mes, dia);
+    if (isNaN(fechaObj.getTime())) return fechaIso;
+    
+    const opciones = { day: '2-digit', month: 'short', year: 'numeric' };
+    let formateada = fechaObj.toLocaleDateString('es-MX', opciones).replace(/\./g, ''); 
+    return formateada.split(' ').join('/');
+  } catch(e) {
+    return fechaIso;
+  }
+}
+
+/* ---------- Navegación ---------- */
 const tabHistorial = document.getElementById('tab-historial');
 const tabFormulario = document.getElementById('tab-formulario');
 const vistaHistorial = document.getElementById('vista-historial');
 const vistaFormulario = document.getElementById('vista-formulario');
 
-tabHistorial.addEventListener('click', () => cambiarVista('historial'));
-tabFormulario.addEventListener('click', () => cambiarVista('formulario'));
-
 function cambiarVista(nombre){
   const esHistorial = nombre === 'historial';
   tabHistorial.classList.toggle('active', esHistorial);
   tabFormulario.classList.toggle('active', !esHistorial);
-  vistaHistorial.classList.toggle('activa', esHistorial);
-  vistaFormulario.classList.toggle('activa', !esHistorial);
+  
+  // Animación de desvanecimiento
+  const vistaOcultar = esHistorial ? vistaFormulario : vistaHistorial;
+  const vistaMostrar = esHistorial ? vistaHistorial : vistaFormulario;
+  
+  vistaOcultar.style.opacity = '0';
+  vistaOcultar.style.transform = 'translateY(10px)';
+  
+  setTimeout(() => {
+    vistaOcultar.classList.remove('activa');
+    vistaMostrar.classList.add('activa');
+    // Pequeño timeout para que el display:block tome efecto antes de animar opacidad
+    setTimeout(() => {
+      vistaMostrar.style.opacity = '1';
+      vistaMostrar.style.transform = 'translateY(0)';
+    }, 50);
+  }, 300);
 }
 
-/* ---------- historial ---------- */
+tabHistorial.addEventListener('click', () => cambiarVista('historial'));
+tabFormulario.addEventListener('click', () => cambiarVista('formulario'));
+
+/* ---------- Historial y Tabla ---------- */
 let pedidosCache = [];
 
-async function cargarHistorial(){
-  document.getElementById('resumen').textContent = 'Cargando pedidos…';
+async function cargarHistorial(silencioso = false){
+  if(!silencioso) mostrarToast('Actualizando datos...', 'info');
+  
   try{
     const res = await fetch(API_URL);
     const data = await res.json();
     if(!data.ok) throw new Error(data.error || 'Error desconocido');
+    
     pedidosCache = data.pedidos.filter(p => p.tipo_registro !== 'CARGO_ENVIO');
     renderTabla();
+    if(!silencioso) mostrarToast('Información actualizada con éxito', 'exito');
   }catch(err){
-    document.getElementById('resumen').textContent = 'No se pudo cargar el historial: ' + err.message;
+    mostrarToast('Error al conectar con la base de datos', 'error');
   }
 }
 
@@ -547,10 +596,13 @@ function renderTabla(){
   const pendEntrega = pedidosCache.filter(p => p.status_entrega === 'PENDIENTE');
   const pendPago = pedidosCache.filter(p => p.status_pago === 'PENDIENTE');
   const montoPendiente = pendPago.reduce((s,p) => s + (Number(p.monto) || 0), 0);
-  document.getElementById('resumen').innerHTML =
-    `Tienes <strong>${pendEntrega.length}</strong> pedidos por llegar y ` +
-    `<strong>${pendPago.length}</strong> pendientes de pago ` +
-    `(<strong>$${montoPendiente.toLocaleString('es-MX',{minimumFractionDigits:2})}</strong>).`;
+  
+  document.getElementById('resumen').innerHTML = `
+    <div class="resumen-icono">📊</div>
+    <div>Tienes <strong>${pendEntrega.length}</strong> pedidos por llegar y 
+    <strong>${pendPago.length}</strong> pendientes de pago 
+    (<strong>$${montoPendiente.toLocaleString('es-MX',{minimumFractionDigits:2})}</strong>).</div>
+  `;
 
   const tbody = document.getElementById('tabla-body');
   const vacio = document.getElementById('estado-vacio');
@@ -564,84 +616,83 @@ function renderTabla(){
 
   filtrados.forEach(p => {
     const tr = document.createElement('tr');
-    tr.className = claseFila(p);
+    tr.id = `fila-${p.folio}`;
 
     const monto = Number(p.monto || 0).toLocaleString('es-MX', {minimumFractionDigits:2});
     const guiaTexto = p.guia || p.paqueteria || '—';
-    const claseEstadoPago = p.status_pago === 'PAGADO' ? 'pago-pagado' : 'pago-pendiente';
-    const textoEntrega = p.status_entrega === 'ENTREGADO' ? 'Entregado' : 'En camino';
-    const textoPago = p.status_pago === 'PAGADO' ? 'Pagado' : 'Pendiente';
     
-    // Aplicamos el formato dd/mmm/aaaa a la fecha que venga de la BD
+    const clasePago = p.status_pago === 'PAGADO' ? 'pago-pagado' : 'pago-pendiente';
+    const textoPago = p.status_pago === 'PAGADO' ? '✓ Pagado' : '⏳ Pendiente';
+    
+    const claseEntrega = p.status_entrega === 'ENTREGADO' ? 'entrega-entregado' : 'entrega-pendiente';
+    const textoEntrega = p.status_entrega === 'ENTREGADO' ? '✓ Entregado' : '🚚 En camino';
+    
     const fechaPagoFormateada = formatearFecha(p.fecha_pago);
 
     tr.innerHTML = `
       <td class="num">#${p.folio}</td>
-      <td>${p.region || ''}</td>
+      <td><strong>${p.region || ''}</strong></td>
       <td>${guiaTexto}</td>
       <td class="col-desc">${p.descripcion || ''}</td>
       <td class="num">${p.cantidad_kg || ''}</td>
-      <td class="num"><strong>$${monto}</strong></td>
-      <!-- Se añadieron las funciones onclick para cambiar los estatus con 1 clic -->
+      <td class="num" style="color:var(--brand-green); font-weight:700;">$${monto}</td>
       <td>
-        <span class="estado entrega interactivo" onclick="toggleEntrega('${p.folio}', '${p.status_entrega}')" title="Clic para cambiar estatus">
+        <span class="estado ${claseEntrega} interactivo" onclick="toggleEntrega('${p.folio}', '${p.status_entrega}')" title="Clic para cambiar">
           ${textoEntrega}
         </span>
       </td>
       <td>
-        <span class="estado ${claseEstadoPago} interactivo" onclick="togglePago('${p.folio}', '${p.status_pago}')" title="Clic para cambiar estatus">
+        <span class="estado ${clasePago} interactivo" onclick="togglePago('${p.folio}', '${p.status_pago}')" title="Clic para cambiar">
           ${textoPago}
         </span>
       </td>
-      <td class="num">${fechaPagoFormateada}</td>
+      <td class="num" id="fecha-${p.folio}">${fechaPagoFormateada}</td>
     `;
-    
     tbody.appendChild(tr);
   });
 }
 
-function claseFila(p){
-  if(p.status_pago === 'PAGADO') return 'fila-pagado';
-  if(p.status_entrega === 'ENTREGADO') return 'fila-entregado';
-  return 'fila-en-camino';
-}
-
 function hoyISO(){ return new Date().toISOString().slice(0,10); }
 
-/* ---------- Funciones interactivas (Click) ---------- */
+function animarFilaActualizada(folio) {
+  const fila = document.getElementById(`fila-${folio}`);
+  if(fila) {
+    fila.classList.remove('fila-actualizada');
+    void fila.offsetWidth; // Forzar reflow para reiniciar animación CSS
+    fila.classList.add('fila-actualizada');
+  }
+}
+
+/* ---------- Interacciones de Clic ---------- */
 window.toggleEntrega = function(folio, estadoActual) {
-  // Alterna entre PENDIENTE y ENTREGADO
   const nuevoEstado = estadoActual === 'ENTREGADO' ? 'PENDIENTE' : 'ENTREGADO';
   
-  // Actualización optimista (cambia la interfaz inmediatamente antes de guardar para no hacer esperar al usuario)
+  // UI Optimista
   const pedido = pedidosCache.find(p => p.folio == folio);
   if(pedido) pedido.status_entrega = nuevoEstado;
   renderTabla(); 
+  animarFilaActualizada(folio);
   
-  // Mandar actualización a Google Script
-  actualizarPedido(folio, { status_entrega: nuevoEstado });
+  actualizarPedido(folio, { status_entrega: nuevoEstado }, 'Estatus de entrega actualizado');
 };
 
 window.togglePago = function(folio, estadoActual) {
-  // Alterna entre PENDIENTE y PAGADO
   const nuevoEstado = estadoActual === 'PAGADO' ? 'PENDIENTE' : 'PAGADO';
-  
-  // Si cambia a PAGADO, asume el día de hoy. Si cambia a PENDIENTE, borra la fecha.
   const nuevaFecha = nuevoEstado === 'PAGADO' ? hoyISO() : '';
   
-  // Actualización optimista
+  // UI Optimista
   const pedido = pedidosCache.find(p => p.folio == folio);
   if(pedido) {
     pedido.status_pago = nuevoEstado;
     pedido.fecha_pago = nuevaFecha;
   }
   renderTabla();
+  animarFilaActualizada(folio);
 
-  // Mandar actualización a Google Script
-  actualizarPedido(folio, { status_pago: nuevoEstado, fecha_pago: nuevaFecha });
+  actualizarPedido(folio, { status_pago: nuevoEstado, fecha_pago: nuevaFecha }, 'Estatus de pago actualizado');
 };
 
-async function actualizarPedido(folio, cambios){
+async function actualizarPedido(folio, cambios, msjExito){
   try{
     const res = await fetch(API_URL, {
       method:'POST',
@@ -649,31 +700,30 @@ async function actualizarPedido(folio, cambios){
       body: JSON.stringify({action:'actualizar', folio, cambios})
     });
     const data = await res.json();
-    if(!data.ok) throw new Error(data.error || 'Error desconocido');
+    if(!data.ok) throw new Error(data.error);
     
-    // Recargamos el historial desde cero de forma silenciosa para asegurar consistencia
-    const resCache = await fetch(API_URL);
-    const dataCache = await resCache.json();
-    if(dataCache.ok){
-      pedidosCache = dataCache.pedidos.filter(p => p.tipo_registro !== 'CARGO_ENVIO');
-      renderTabla();
-    }
+    mostrarToast(msjExito, 'exito');
+    cargarHistorial(true); // Recarga silenciosa de fondo para sincronizar
   }catch(err){
-    alert('No se pudo actualizar el pedido: ' + err.message);
+    mostrarToast('No se pudo guardar el cambio en la base de datos', 'error');
+    cargarHistorial(true); // Revertir si hubo error
   }
 }
 
 ['f-region','f-entrega','f-pago'].forEach(id =>
   document.getElementById(id).addEventListener('change', renderTabla));
 document.getElementById('f-buscar').addEventListener('input', renderTabla);
-document.getElementById('btn-refrescar').addEventListener('click', cargarHistorial);
+document.getElementById('btn-refrescar').addEventListener('click', () => cargarHistorial(false));
 
-/* ---------- formulario ---------- */
+/* ---------- Guardar Nuevo Pedido ---------- */
 document.getElementById('form-pedido').addEventListener('submit', async function(e){
   e.preventDefault();
-  const mensaje = document.getElementById('mensaje-form');
-  mensaje.className = '';
-  mensaje.textContent = 'Guardando…';
+  
+  const btn = this.querySelector('button[type="submit"]');
+  const textoOriginal = btn.textContent;
+  btn.textContent = 'Guardando datos...';
+  btn.disabled = true;
+  mostrarToast('Enviando información...', 'info');
 
   const pedido = {
     region: document.getElementById('f-in-region').value,
@@ -692,19 +742,25 @@ document.getElementById('form-pedido').addEventListener('submit', async function
       body: JSON.stringify({action:'crear', pedido})
     });
     const data = await res.json();
-    if(!data.ok) throw new Error(data.error || 'Error desconocido');
-    mensaje.className = 'ok';
-    mensaje.textContent = `Guardado exitosamente con el folio #${data.folio}.`;
+    if(!data.ok) throw new Error(data.error);
+    
+    mostrarToast(`¡Pedido #${data.folio} registrado con éxito!`, 'exito');
     this.reset();
-    cargarHistorial();
+    cargarHistorial(true);
+    
+    // Regresar a la pestaña historial tras éxito
+    setTimeout(() => { cambiarVista('historial'); }, 1500);
+    
   }catch(err){
-    mensaje.className = 'error';
-    mensaje.textContent = 'No se pudo guardar: ' + err.message;
+    mostrarToast('Error al registrar pedido', 'error');
+  } finally {
+    btn.textContent = textoOriginal;
+    btn.disabled = false;
   }
 });
 
-/* ---------- carga inicial ---------- */
-cargarHistorial();
+/* ---------- Inicialización ---------- */
+cargarHistorial(true); // Carga inicial silenciosa
 </script>
 
 </body>
