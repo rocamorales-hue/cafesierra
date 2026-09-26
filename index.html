@@ -533,7 +533,8 @@
 <div id="toast-container" class="toast-container"></div>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbwESLMHq0qg9bz5glQX5zqCkOh5Fprpdpn1lpNNrdQwAobGQOlB8OW1GkETEx9j6Arf/exec";
+// AQUÍ VA TU NUEVA URL DE LA APLICACIÓN WEB DE APPS SCRIPT
+const API_URL = "https://script.google.com/macros/s/AKfycbzhhL1YxAiqXj_LmSPLIe6jsJSgkyw_ejgUmEll4EynBKwDSbDPu009XBbKlAwxxuo/exec";
 
 /* ---------- Sistema de Notificaciones (Toasts) ---------- */
 function mostrarToast(mensaje, tipo = 'exito') {
@@ -784,7 +785,7 @@ async function eliminarPedido(folio) {
     const res = await fetch(API_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify({ action: 'eliminar', folio })
+      body: JSON.stringify({ action: 'eliminar', folio: Number(folio) })
     });
     const data = await res.json();
     if(!data.ok) throw new Error(data.error || 'No se pudo eliminar');
@@ -792,6 +793,7 @@ async function eliminarPedido(folio) {
     mostrarToast(`Pedido #${folio} eliminado correctamente`, 'exito');
     cargarHistorial(true);
   } catch(err) {
+    console.error("Error al eliminar:", err);
     mostrarToast('Error al intentar eliminar el pedido', 'error');
   }
 }
