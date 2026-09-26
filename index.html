@@ -6,34 +6,35 @@
 <title>Café Sierra Escondida - Pedidos</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<!-- Tipografías modernas: Montserrat para títulos y marca, Inter para datos -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@500;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
-    /* Paleta basada en el logo de Café Sierra Escondida */
+    /* Paleta de la marca */
     --brand-orange: #F3A022;
     --brand-orange-dark: #D98918;
     --brand-green: #0F6343;
     --brand-dark: #1C1C1C;
     
-    --bg: #F8F5F0;
+    --bg: #F5F7FA;
     --surface: #FFFFFF;
     --ink: #333333;
     --ink-soft: #666666;
     
-    --line: #E5DED5;
-    --shadow: rgba(0, 0, 0, 0.08);
+    --line: #E2E8F0;
+    --shadow: rgba(0, 0, 0, 0.05);
     
     /* Estados */
-    --state-amber: #C98A2B;
-    --state-amber-bg: #FDF3E1;
-    --state-slate: #3E5C76;
-    --state-slate-bg: #EAF0F6;
-    --state-sage: #0F6343;
-    --state-sage-bg: #E1F0EA;
+    --state-amber: #B45309;
+    --state-amber-bg: #FEF3C7;
+    --state-slate: #0F766E;
+    --state-slate-bg: #CCFBF1;
+    --state-sage: #15803D;
+    --state-sage-bg: #DCFCE7;
 
     --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
     --sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    --serif: "Source Serif 4", Georgia, serif;
+    --display: 'Montserrat', sans-serif;
   }
   
   * { box-sizing: border-box; }
@@ -49,73 +50,78 @@
     -webkit-font-smoothing: antialiased;
   }
 
-  /* --- Header / Navegación --- */
+  /* --- Header / Navegación Moderno --- */
   header {
-    background: var(--brand-dark);
-    color: #fff;
-    padding: 1.25rem 2rem;
+    background: var(--surface);
+    color: var(--ink);
+    padding: 1rem 2rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
     flex-wrap: wrap;
-    gap: 1rem;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    gap: 1.5rem;
+    box-shadow: 0 4px 20px var(--shadow);
+    border-bottom: 1px solid var(--line);
+    position: sticky;
+    top: 0;
+    z-index: 100;
   }
   
   .brand-container {
     display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: 1.2rem;
   }
   
   .logo {
-    width: 65px;
-    height: auto;
-    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+    max-height: 65px;
+    width: auto;
+    object-fit: contain;
   }
   
   header h1 {
-    font-family: var(--serif);
-    font-size: 1.6rem;
-    font-weight: 700;
+    font-family: var(--display);
+    font-size: 1.5rem;
+    font-weight: 800;
     margin: 0;
-    letter-spacing: 0.02em;
-    color: var(--brand-orange);
+    color: var(--brand-green);
+    letter-spacing: -0.02em;
   }
   
   header p {
-    margin: 0.2rem 0 0;
-    font-size: 0.85rem;
-    color: #E5DED5;
+    margin: 0.15rem 0 0;
+    font-size: 0.8rem;
+    color: var(--ink-soft);
+    font-weight: 500;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.08em;
   }
   
-  nav { display: flex; gap: 0.75rem; }
+  nav { display: flex; gap: 0.5rem; }
   nav button {
     background: transparent;
-    border: 1px solid rgba(255,255,255,0.2);
-    color: #fff;
+    border: none;
+    color: var(--ink-soft);
     padding: 0.6rem 1.2rem;
     border-radius: 8px;
     font-size: 0.95rem;
-    font-weight: 500;
+    font-weight: 600;
+    font-family: var(--sans);
     cursor: pointer;
     transition: all 0.2s ease;
   }
   nav button:hover {
-    background: rgba(255,255,255,0.1);
+    background: var(--bg);
+    color: var(--brand-green);
   }
   nav button.active {
-    background: var(--brand-orange);
-    color: var(--brand-dark);
-    border-color: var(--brand-orange);
-    font-weight: 600;
+    background: var(--brand-green);
+    color: white;
   }
 
   /* --- Layout principal --- */
   main {
-    max-width: 1100px;
+    max-width: 1200px;
     margin: 0 auto;
     padding: 2rem 1.5rem 4rem;
   }
@@ -129,45 +135,48 @@
 
   /* --- Historial --- */
   .resumen {
-    background: var(--brand-green);
+    background: linear-gradient(135deg, var(--brand-green), #147a53);
     color: white;
-    border-radius: 10px;
+    border-radius: 12px;
     padding: 1.2rem 1.5rem;
     margin-bottom: 1.5rem;
     font-size: 1.05rem;
-    box-shadow: 0 4px 6px var(--shadow);
+    box-shadow: 0 8px 16px rgba(15, 99, 67, 0.15);
+    font-family: var(--display);
+    font-weight: 500;
   }
-  .resumen strong { color: var(--brand-orange); font-weight: 700; }
+  .resumen strong { color: var(--brand-orange); font-weight: 800; }
   
   .filtros {
     background: var(--surface);
     padding: 1.2rem;
-    border-radius: 10px;
-    box-shadow: 0 2px 8px var(--shadow);
+    border-radius: 12px;
+    box-shadow: 0 2px 12px var(--shadow);
     display: flex;
     flex-wrap: wrap;
     gap: 1rem;
     margin-bottom: 1.5rem;
     align-items: end;
+    border: 1px solid var(--line);
   }
   
   .campo { display: flex; flex-direction: column; gap: 0.4rem; }
-  .campo label { font-size: 0.85rem; color: var(--ink-soft); font-weight: 500; }
+  .campo label { font-size: 0.85rem; color: var(--ink-soft); font-weight: 600; }
   
   select, input[type=text], input[type=number], input[type=date] {
     font-family: var(--sans);
     font-size: 0.95rem;
     padding: 0.6rem 0.8rem;
-    border: 1px solid var(--line);
+    border: 1px solid #CBD5E1;
     border-radius: 8px;
-    background: var(--bg);
+    background: var(--surface);
     color: var(--ink);
-    transition: border-color 0.2s;
+    transition: all 0.2s;
   }
   select:focus, input:focus { 
     outline: none; 
-    border-color: var(--brand-orange); 
-    box-shadow: 0 0 0 3px rgba(243, 160, 34, 0.2);
+    border-color: var(--brand-green); 
+    box-shadow: 0 0 0 3px rgba(15, 99, 67, 0.15);
   }
   
   .btn {
@@ -183,77 +192,80 @@
   .btn-primario { background: var(--brand-orange); color: var(--brand-dark); }
   .btn-primario:hover { background: var(--brand-orange-dark); transform: translateY(-1px); }
   
-  .btn-secundario { background: var(--surface); color: var(--ink); border: 1px solid var(--line); }
-  .btn-secundario:hover { background: var(--bg); }
+  .btn-secundario { background: var(--bg); color: var(--ink); border: 1px solid #CBD5E1; }
+  .btn-secundario:hover { background: #E2E8F0; }
   
-  .btn-fila { 
-    font-size: 0.8rem; 
-    padding: 0.4rem 0.8rem; 
-    border-radius: 6px; 
-    border: none; 
-    cursor: pointer; 
-    margin-right: 0.4rem; 
-    margin-bottom: 0.4rem;
-    white-space: nowrap; 
-    font-weight: 500;
-    transition: opacity 0.2s;
-  }
-  .btn-fila:hover { opacity: 0.8; }
-  .btn-entregar { background: var(--state-slate-bg); color: var(--state-slate); }
-  .btn-pagar { background: var(--state-sage-bg); color: var(--state-sage); }
-
   /* --- Tabla --- */
   .tabla-envoltura {
     overflow-x: auto;
     border: 1px solid var(--line);
-    border-radius: 10px;
+    border-radius: 12px;
     background: var(--surface);
-    box-shadow: 0 4px 12px var(--shadow);
+    box-shadow: 0 4px 20px var(--shadow);
   }
-  /* Estilizado del scroll para webkit */
   .tabla-envoltura::-webkit-scrollbar { height: 8px; }
   .tabla-envoltura::-webkit-scrollbar-track { background: var(--bg); }
-  .tabla-envoltura::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
+  .tabla-envoltura::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 4px; }
   
-  table { border-collapse: collapse; width: 100%; font-size: 0.9rem; }
+  table { border-collapse: collapse; width: 100%; font-size: 0.9rem; text-align: left; }
   thead th {
-    text-align: left;
     padding: 1rem;
-    background: var(--bg);
-    color: var(--brand-dark);
+    background: #F8FAFC;
+    color: var(--ink-soft);
     font-weight: 600;
     border-bottom: 2px solid var(--line);
     white-space: nowrap;
+    font-family: var(--display);
   }
   tbody td {
     padding: 1rem;
     border-bottom: 1px solid var(--line);
     vertical-align: middle;
   }
-  tbody tr:hover td { background-color: rgba(0,0,0,0.01); }
+  tbody tr:hover td { background-color: #F8FAFC; }
   tbody tr:last-child td { border-bottom: none; }
   
-  .num { font-family: var(--mono); font-weight: 500;}
+  .num { font-family: var(--mono); font-weight: 500; color: var(--ink-soft); }
   
+  /* Más espacio para la descripción */
+  .col-desc { min-width: 280px; white-space: normal; line-height: 1.4; }
+
+  /* --- Estados (Clickables) --- */
   .estado {
     display: inline-block;
-    padding: 0.3rem 0.7rem;
+    padding: 0.35rem 0.8rem;
     border-radius: 20px;
     font-size: 0.8rem;
     font-weight: 600;
+    font-family: var(--sans);
+    user-select: none;
   }
-  .fila-en-camino .estado.entrega { background: var(--state-amber-bg); color: var(--state-amber); }
-  .fila-entregado .estado.entrega { background: var(--state-slate-bg); color: var(--state-slate); }
-  .fila-pagado .estado.entrega { background: var(--state-slate-bg); color: var(--state-slate); }
   
-  .estado.pago-pendiente { background: var(--state-amber-bg); color: var(--state-amber); }
-  .estado.pago-pagado { background: var(--state-sage-bg); color: var(--state-sage); }
+  /* Clase para animar los estados clickeables */
+  .estado.interactivo { 
+    cursor: pointer; 
+    transition: transform 0.1s, opacity 0.2s, box-shadow 0.2s; 
+    border: 1px solid transparent;
+  }
+  .estado.interactivo:hover { 
+    transform: scale(1.05); 
+    opacity: 0.9; 
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1); 
+  }
+  .estado.interactivo:active { transform: scale(0.95); }
+
+  .fila-en-camino .estado.entrega { background: var(--state-amber-bg); color: var(--state-amber); border-color: #FDE68A; }
+  .fila-entregado .estado.entrega { background: var(--state-slate-bg); color: var(--state-slate); border-color: #99F6E4; }
+  
+  .estado.pago-pendiente { background: var(--state-amber-bg); color: var(--state-amber); border-color: #FDE68A; }
+  .estado.pago-pagado { background: var(--state-sage-bg); color: var(--state-sage); border-color: #BBF7D0; }
   
   .estado-vacio {
-    padding: 3rem 1rem;
+    padding: 4rem 1rem;
     text-align: center;
     color: var(--ink-soft);
     font-size: 1rem;
+    font-weight: 500;
   }
 
   /* --- Formulario --- */
@@ -264,23 +276,23 @@
   .formulario {
     background: var(--surface);
     border: 1px solid var(--line);
-    border-radius: 12px;
-    padding: 2rem;
+    border-radius: 16px;
+    padding: 2.5rem;
     width: 100%;
-    max-width: 550px;
-    box-shadow: 0 8px 24px var(--shadow);
+    max-width: 600px;
+    box-shadow: 0 8px 30px var(--shadow);
   }
   .formulario h2 {
-    font-family: var(--serif);
-    font-size: 1.5rem;
+    font-family: var(--display);
+    font-size: 1.6rem;
     margin: 0 0 1.5rem;
-    color: var(--brand-dark);
-    border-bottom: 2px solid var(--brand-orange);
+    color: var(--brand-green);
+    border-bottom: 3px solid var(--brand-orange);
     padding-bottom: 0.5rem;
     display: inline-block;
   }
   .formulario .campo { margin-bottom: 1.2rem; width: 100%; }
-  .formulario select, .formulario input { width: 100%; }
+  .formulario select, .formulario input { width: 100%; padding: 0.7rem 0.8rem; }
   
   .fila-doble { display: flex; gap: 1rem; }
   .fila-doble .campo { flex: 1; }
@@ -295,28 +307,26 @@
     border-radius: 8px;
     border: 1px solid var(--line);
   }
-  .check input { width: auto; transform: scale(1.2); accent-color: var(--brand-orange); }
-  .check label { font-size: 0.9rem; color: var(--ink); margin: 0; font-weight: 500; cursor: pointer; }
+  .check input { width: auto; transform: scale(1.3); accent-color: var(--brand-green); cursor: pointer; }
+  .check label { font-size: 0.95rem; color: var(--ink); margin: 0; font-weight: 500; cursor: pointer; }
   
-  .formulario .btn-primario { width: 100%; padding: 0.8rem; font-size: 1rem; }
+  .formulario .btn-primario { width: 100%; padding: 0.9rem; font-size: 1.05rem; }
   
-  #mensaje-form { margin-top: 1rem; font-size: 0.95rem; text-align: center; font-weight: 500; }
+  #mensaje-form { margin-top: 1.2rem; font-size: 0.95rem; text-align: center; font-weight: 600; }
   #mensaje-form.ok { color: var(--brand-green); }
-  #mensaje-form.error { color: #D32F2F; }
+  #mensaje-form.error { color: #DC2626; }
 
   /* --- Responsive --- */
   @media (max-width: 768px) {
-    header { flex-direction: column; align-items: flex-start; padding: 1rem 1.5rem; }
-    .brand-container { margin-bottom: 0.5rem; }
-    nav { width: 100%; overflow-x: auto; padding-bottom: 0.5rem; }
+    header { flex-direction: column; align-items: flex-start; padding: 1rem 1.5rem; gap: 1rem; }
+    .brand-container { margin-bottom: 0; }
+    nav { width: 100%; overflow-x: auto; padding-bottom: 0.5rem; justify-content: space-between; }
     nav button { flex: 1; white-space: nowrap; text-align: center; }
     
     .filtros { flex-direction: column; align-items: stretch; }
     .filtros .campo { width: 100%; }
-    .filtros .btn { margin-top: 0.5rem; }
     
     .fila-doble { flex-direction: column; gap: 0; }
-    
     .formulario { padding: 1.5rem; }
   }
 </style>
@@ -325,7 +335,8 @@
 
 <header>
   <div class="brand-container">
-    <img src="logo con colores sin fondo.jpg" alt="Café Sierra Escondida Logo" class="logo">
+    <!-- Se mantiene el nombre exacto de tu archivo -->
+    <img src="logo con colores sin fondo.jpg" alt="Café Sierra Escondida Logo" class="logo" onerror="this.style.display='none'">
     <div>
       <h1>Café Sierra Escondida</h1>
       <p>Lo mejor de México en tu taza</p>
@@ -351,6 +362,8 @@
           <option value="">Todas</option>
           <option value="CHIAPAS">Chiapas</option>
           <option value="VERACRUZ">Veracruz</option>
+          <!-- Nueva región Oaxaca agregada -->
+          <option value="OAXACA">Oaxaca</option>
         </select>
       </div>
       <div class="campo">
@@ -383,13 +396,12 @@
             <th>Folio</th>
             <th>Región</th>
             <th>Guía / paquetería</th>
-            <th>Descripción</th>
+            <th class="col-desc">Descripción</th>
             <th>Kg</th>
             <th>Monto</th>
             <th>Entrega</th>
             <th>Pago</th>
             <th>Fecha pago</th>
-            <th>Acciones</th>
           </tr>
         </thead>
         <tbody id="tabla-body"></tbody>
@@ -409,6 +421,8 @@
           <select id="f-in-region" required>
             <option value="CHIAPAS">Chiapas</option>
             <option value="VERACRUZ">Veracruz</option>
+            <!-- Nueva región Oaxaca agregada -->
+            <option value="OAXACA">Oaxaca</option>
             <option value="OTRA">Otra</option>
           </select>
         </div>
@@ -459,8 +473,24 @@
 </main>
 
 <script>
-/* Toda la lógica JS se mantiene 100% igual y funcional, conectando con Google Apps Script */
 const API_URL = "https://script.google.com/macros/s/AKfycbwESLMHq0qg9bz5glQX5zqCkOh5Fprpdpn1lpNNrdQwAobGQOlB8OW1GkETEx9j6Arf/exec";
+
+/* ---------- Formateador de Fecha dd/mmm/aaaa ---------- */
+function formatearFecha(fechaIso) {
+  if (!fechaIso) return '';
+  // Se asume formato YYYY-MM-DD
+  const partes = fechaIso.split('-');
+  if(partes.length !== 3) return fechaIso;
+  
+  // Usamos los números del string para evitar problemas de zona horaria (UTC vs Local)
+  const fechaObj = new Date(partes[0], partes[1] - 1, partes[2]);
+  
+  const opciones = { day: '2-digit', month: 'short', year: 'numeric' };
+  // Genera algo como "26 sep 2026", luego reemplazamos espacios por "/"
+  let formateada = fechaObj.toLocaleDateString('es-MX', opciones).replace(/\./g, ''); 
+  // Convertimos "26 sep 2026" a "26/sep/2026"
+  return formateada.split(' ').join('/');
+}
 
 /* ---------- navegación entre pestañas ---------- */
 const tabHistorial = document.getElementById('tab-historial');
@@ -541,35 +571,31 @@ function renderTabla(){
     const claseEstadoPago = p.status_pago === 'PAGADO' ? 'pago-pagado' : 'pago-pendiente';
     const textoEntrega = p.status_entrega === 'ENTREGADO' ? 'Entregado' : 'En camino';
     const textoPago = p.status_pago === 'PAGADO' ? 'Pagado' : 'Pendiente';
+    
+    // Aplicamos el formato dd/mmm/aaaa a la fecha que venga de la BD
+    const fechaPagoFormateada = formatearFecha(p.fecha_pago);
 
     tr.innerHTML = `
-      <td class="num">${p.folio}</td>
+      <td class="num">#${p.folio}</td>
       <td>${p.region || ''}</td>
       <td>${guiaTexto}</td>
-      <td>${p.descripcion || ''}</td>
+      <td class="col-desc">${p.descripcion || ''}</td>
       <td class="num">${p.cantidad_kg || ''}</td>
-      <td class="num">$${monto}</td>
-      <td><span class="estado entrega">${textoEntrega}</span></td>
-      <td><span class="estado ${claseEstadoPago}">${textoPago}</span></td>
-      <td>${p.fecha_pago || ''}</td>
-      <td class="acciones"></td>
+      <td class="num"><strong>$${monto}</strong></td>
+      <!-- Se añadieron las funciones onclick para cambiar los estatus con 1 clic -->
+      <td>
+        <span class="estado entrega interactivo" onclick="toggleEntrega('${p.folio}', '${p.status_entrega}')" title="Clic para cambiar estatus">
+          ${textoEntrega}
+        </span>
+      </td>
+      <td>
+        <span class="estado ${claseEstadoPago} interactivo" onclick="togglePago('${p.folio}', '${p.status_pago}')" title="Clic para cambiar estatus">
+          ${textoPago}
+        </span>
+      </td>
+      <td class="num">${fechaPagoFormateada}</td>
     `;
-
-    const celdaAcciones = tr.querySelector('.acciones');
-    if(p.status_entrega === 'PENDIENTE'){
-      const btn = document.createElement('button');
-      btn.className = 'btn-fila btn-entregar';
-      btn.textContent = 'Marcar entregado';
-      btn.onclick = () => actualizarPedido(p.folio, {status_entrega:'ENTREGADO'});
-      celdaAcciones.appendChild(btn);
-    }
-    if(p.status_pago === 'PENDIENTE'){
-      const btn = document.createElement('button');
-      btn.className = 'btn-fila btn-pagar';
-      btn.textContent = 'Marcar pagado';
-      btn.onclick = () => actualizarPedido(p.folio, {status_pago:'PAGADO', fecha_pago: hoyISO()});
-      celdaAcciones.appendChild(btn);
-    }
+    
     tbody.appendChild(tr);
   });
 }
@@ -582,6 +608,39 @@ function claseFila(p){
 
 function hoyISO(){ return new Date().toISOString().slice(0,10); }
 
+/* ---------- Funciones interactivas (Click) ---------- */
+window.toggleEntrega = function(folio, estadoActual) {
+  // Alterna entre PENDIENTE y ENTREGADO
+  const nuevoEstado = estadoActual === 'ENTREGADO' ? 'PENDIENTE' : 'ENTREGADO';
+  
+  // Actualización optimista (cambia la interfaz inmediatamente antes de guardar para no hacer esperar al usuario)
+  const pedido = pedidosCache.find(p => p.folio == folio);
+  if(pedido) pedido.status_entrega = nuevoEstado;
+  renderTabla(); 
+  
+  // Mandar actualización a Google Script
+  actualizarPedido(folio, { status_entrega: nuevoEstado });
+};
+
+window.togglePago = function(folio, estadoActual) {
+  // Alterna entre PENDIENTE y PAGADO
+  const nuevoEstado = estadoActual === 'PAGADO' ? 'PENDIENTE' : 'PAGADO';
+  
+  // Si cambia a PAGADO, asume el día de hoy. Si cambia a PENDIENTE, borra la fecha.
+  const nuevaFecha = nuevoEstado === 'PAGADO' ? hoyISO() : '';
+  
+  // Actualización optimista
+  const pedido = pedidosCache.find(p => p.folio == folio);
+  if(pedido) {
+    pedido.status_pago = nuevoEstado;
+    pedido.fecha_pago = nuevaFecha;
+  }
+  renderTabla();
+
+  // Mandar actualización a Google Script
+  actualizarPedido(folio, { status_pago: nuevoEstado, fecha_pago: nuevaFecha });
+};
+
 async function actualizarPedido(folio, cambios){
   try{
     const res = await fetch(API_URL, {
@@ -591,7 +650,14 @@ async function actualizarPedido(folio, cambios){
     });
     const data = await res.json();
     if(!data.ok) throw new Error(data.error || 'Error desconocido');
-    cargarHistorial();
+    
+    // Recargamos el historial desde cero de forma silenciosa para asegurar consistencia
+    const resCache = await fetch(API_URL);
+    const dataCache = await resCache.json();
+    if(dataCache.ok){
+      pedidosCache = dataCache.pedidos.filter(p => p.tipo_registro !== 'CARGO_ENVIO');
+      renderTabla();
+    }
   }catch(err){
     alert('No se pudo actualizar el pedido: ' + err.message);
   }
