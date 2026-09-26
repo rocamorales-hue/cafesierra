@@ -95,7 +95,6 @@
 </div>
 
 <script>
-    // URL actualizada con tu nuevo Web App de Google Apps Script
     const API_URL = "https://script.google.com/macros/s/AKfycbzA1971llNeupexchjuh138_8KOZTRs-jNQzceAvd7Q3SKxjJKZii0i3eYq7Vagnaff/exec";
     
     let datosGlobales = [];
@@ -121,8 +120,8 @@
         tbody.innerHTML = '';
         
         datos.forEach(fila => {
-            const entrega = fila['STATUS DE ENTREGA'];
-            const pago = fila['STATUS DE PAGO'];
+            const entrega = fila['STATUS DE ENTREGA'] || '-';
+            const pago = fila['STATUS DE PAGO'] || '-';
             let fechaPagoText = fila['FECHA DE PAGO'] ? fila['FECHA DE PAGO'] : '---';
 
             if(fechaPagoText.includes('T')) {
@@ -133,9 +132,9 @@
             tr.innerHTML = `
                 <td>${fila['GUIAS'] || '-'}</td>
                 <td>${fila['REGION'] || '-'}</td>
-                <td>${fila['CANTIDAD (KG)']}</td>
-                <td>${fila['DESCRIPCION']}</td>
-                <td>$${fila['MONTO']}</td>
+                <td>${fila['CANTIDAD (KG)'] || 0}</td>
+                <td>${fila['DESCRIPCION'] || '-'}</td>
+                <td>$${fila['MONTO'] || 0}</td>
                 <td class="${entrega === 'Entregado' ? 'estado-ok' : 'estado-pendiente'}">${entrega}</td>
                 <td class="${pago === 'Pagado' ? 'estado-ok' : 'estado-pendiente'}">${pago}</td>
                 <td>${fechaPagoText}</td>
@@ -165,6 +164,7 @@
         try {
             await fetch(API_URL, {
                 method: 'POST',
+                mode: 'no-cors',
                 headers: { "Content-Type": "text/plain;charset=utf-8" },
                 body: JSON.stringify(nuevoPedido)
             });
@@ -174,7 +174,9 @@
         
         e.target.reset();
         boton.innerText = "Registrar Pedido";
-        cargarDatos(); 
+        
+        // Da un breve respiro para que Google Sheets procese el guardado y recarga
+        setTimeout(cargarDatos, 1500); 
     });
 
     async function actualizarFila(filaExcel, accion) {
@@ -186,6 +188,7 @@
         try {
             await fetch(API_URL, {
                 method: 'POST',
+                mode: 'no-cors',
                 headers: { "Content-Type": "text/plain;charset=utf-8" },
                 body: JSON.stringify(payload)
             });
@@ -193,8 +196,10 @@
             console.error("Error al actualizar:", error);
         }
         
-        document.getElementById('loading').innerText = "Cargando base de datos...";
-        cargarDatos(); 
+        setTimeout(() => {
+            document.getElementById('loading').innerText = "Cargando base de datos...";
+            cargarDatos(); 
+        }, 1500);
     }
 
     function filtrar(tipo, elemento) {
