@@ -95,7 +95,8 @@
 </div>
 
 <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbzA1971llNeupexchjuh138_8KOZTRs-jNQzceAvd7Q3SKxjJKZii0i3eYq7Vagnaff/exec";
+    // URL actualizada con tu nuevo Web App de Google Apps Script
+    const API_URL = "https://script.google.com/macros/s/AKfycbz5-KEYl0JdLDrnzvYfpTyNjbJHQoa1WdukjWxrYEQv-H5KMqM3pECOSujlX7QXRWeJ/exec";
     
     let datosGlobales = [];
 
@@ -174,8 +175,6 @@
         
         e.target.reset();
         boton.innerText = "Registrar Pedido";
-        
-        // Da un breve respiro para que Google Sheets procese el guardado y recarga
         setTimeout(cargarDatos, 1500); 
     });
 
