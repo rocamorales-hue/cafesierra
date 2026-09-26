@@ -15,31 +15,29 @@
         h1, h2 { color: var(--cafe-oscuro); text-align: center; }
         .contenedor { max-width: 1000px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
         
-        /* Formulario */
         .formulario { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 2px solid #eee; }
         input, select { padding: 10px; border: 1px solid #ccc; border-radius: 5px; width: 100%; box-sizing: border-box; }
         button { padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; transition: 0.3s; }
         .btn-guardar { background-color: var(--verde-acento); color: white; grid-column: 1 / -1; font-size: 16px; }
         .btn-guardar:hover { background-color: #3a5a39; }
         
-        /* Filtros y Tabla */
         .filtros { display: flex; gap: 10px; margin-bottom: 15px; justify-content: center; }
         .btn-filtro { background-color: #eee; color: #333; }
         .btn-filtro.activo { background-color: var(--cafe-claro); color: white; }
         
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px; }
-        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
-        th { background-color: var(--cafe-oscuro); color: white; }
+        /* Contenedor responsivo para la tabla */
+        .tabla-responsiva { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
+        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background-color: var(--cafe-oscuro); color: white; white-space: nowrap; }
         
-        /* Botones de acción en tabla */
-        .btn-accion { font-size: 12px; padding: 5px 10px; margin: 2px; }
+        .btn-accion { font-size: 12px; padding: 5px 8px; margin: 2px; }
         .btn-pagar { background-color: #e07a5f; color: white; }
         .btn-llegar { background-color: #81b29a; color: white; }
         
         .estado-ok { font-weight: bold; color: var(--verde-acento); }
         .estado-pendiente { font-weight: bold; color: #e07a5f; }
         
-        /* Loading */
         #loading { text-align: center; font-weight: bold; color: var(--cafe-oscuro); display: none; }
     </style>
 </head>
@@ -51,21 +49,16 @@
     <!-- Sección de Registro -->
     <h2>Nuevo Pedido</h2>
     <form id="formPedido" class="formulario">
-        <input type="date" id="fecha" required>
-        <select id="origen" required>
-            <option value="">Origen...</option>
+        <input type="text" id="guias" placeholder="No. de Guías">
+        <select id="region" required>
+            <option value="">Región...</option>
             <option value="Chiapas">Chiapas</option>
             <option value="Oaxaca">Oaxaca</option>
             <option value="Veracruz">Veracruz</option>
         </select>
-        <select id="tueste" required>
-            <option value="">Tueste...</option>
-            <option value="Medio">Medio</option>
-            <option value="Medio-Oscuro">Medio-Oscuro</option>
-            <option value="Oscuro">Oscuro</option>
-        </select>
         <input type="number" id="cantidad" placeholder="Cantidad (kg)" required>
-        <input type="number" id="costo" placeholder="Costo Total ($)" required>
+        <input type="text" id="descripcion" placeholder="Descripción (Ej. Tueste Medio)" required>
+        <input type="number" step="0.01" id="monto" placeholder="Monto Total ($)" required>
         <button type="submit" class="btn-guardar">Registrar Pedido</button>
     </form>
 
@@ -79,32 +72,33 @@
     
     <div id="loading">Cargando base de datos...</div>
     
-    <table id="tablaPedidos">
-        <thead>
-            <tr>
-                <th>Fecha</th>
-                <th>Origen</th>
-                <th>Tueste</th>
-                <th>Cant.</th>
-                <th>Costo</th>
-                <th>Envío</th>
-                <th>Pago</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody id="cuerpoTabla">
-            <!-- Los datos se inyectarán aquí -->
-        </tbody>
-    </table>
+    <div class="tabla-responsiva">
+        <table id="tablaPedidos">
+            <thead>
+                <tr>
+                    <th>Guías</th>
+                    <th>Región</th>
+                    <th>Cant (kg)</th>
+                    <th>Descripción</th>
+                    <th>Monto</th>
+                    <th>Entrega</th>
+                    <th>Pago</th>
+                    <th>Fecha de Pago</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="cuerpoTabla">
+                <!-- Los datos se inyectarán aquí -->
+            </tbody>
+        </table>
+    </div>
 </div>
-https://script.google.com/macros/s/AKfycbxPuh36oQjhWLaGCKtZ6JoVEUD2l0Zo5ud60SZUnEnKNO0n0bxfVzuqFEnCClnOsQEa/exec
+
 <script>
-    // ====== AQUÍ PEGA TU URL DE GOOGLE APPS SCRIPT ======
-    const API_URL = "AQUI_TU_URL_DE_GOOGLE_SCRIPT";
+    const API_URL = "https://script.google.com/macros/s/AKfycbwvnnXEn6bP2Xgd9SxTrkub2KQRxefbARhapajgj5LMeJjjpwH3zpBK_imsxNArlKY4/exec";
     
     let datosGlobales = [];
 
-    // 1. Cargar datos al abrir la página
     async function cargarDatos() {
         document.getElementById('loading').style.display = 'block';
         document.getElementById('cuerpoTabla').innerHTML = '';
@@ -114,43 +108,45 @@ https://script.google.com/macros/s/AKfycbxPuh36oQjhWLaGCKtZ6JoVEUD2l0Zo5ud60SZUn
             datosGlobales = await respuesta.json();
             renderizarTabla(datosGlobales);
         } catch (error) {
-            console.error("Error al cargar:", error);
+            console.error("Error:", error);
             alert("Hubo un error al cargar los datos.");
         } finally {
             document.getElementById('loading').style.display = 'none';
         }
     }
 
-    // 2. Renderizar la tabla con los datos
     function renderizarTabla(datos) {
         const tbody = document.getElementById('cuerpoTabla');
         tbody.innerHTML = '';
         
         datos.forEach(fila => {
-            // Ajusta los nombres de estas propiedades (Fecha, Origen, etc.) 
-            // a como se llamen EXACTAMENTE los encabezados en tu Google Sheet (respetando mayúsculas)
-            const envio = fila.Estado_Envío || fila['Estado_Envío'] || fila['Envío'] || fila['Estado Envío']; 
-            const pago = fila.Estado_Pago || fila['Estado_Pago'] || fila['Pago'] || fila['Estado Pago'];
+            const entrega = fila['STATUS DE ENTREGA'];
+            const pago = fila['STATUS DE PAGO'];
+            let fechaPagoText = fila['FECHA DE PAGO'] ? fila['FECHA DE PAGO'] : '---';
+
+            if(fechaPagoText.includes('T')) {
+                fechaPagoText = new Date(fechaPagoText).toLocaleDateString('es-MX');
+            }
             
             let tr = document.createElement('tr');
             tr.innerHTML = `
-                <td>${formatearFecha(fila.Fecha)}</td>
-                <td>${fila.Origen}</td>
-                <td>${fila.Tueste}</td>
-                <td>${fila.Cantidad} kg</td>
-                <td>$${fila.Costo}</td>
-                <td class="${envio === 'Entregado' ? 'estado-ok' : 'estado-pendiente'}">${envio}</td>
+                <td>${fila['GUIAS'] || '-'}</td>
+                <td>${fila['REGION'] || '-'}</td>
+                <td>${fila['CANTIDAD (KG)']}</td>
+                <td>${fila['DESCRIPCION']}</td>
+                <td>$${fila['MONTO']}</td>
+                <td class="${entrega === 'Entregado' ? 'estado-ok' : 'estado-pendiente'}">${entrega}</td>
                 <td class="${pago === 'Pagado' ? 'estado-ok' : 'estado-pendiente'}">${pago}</td>
+                <td>${fechaPagoText}</td>
                 <td>
                     ${pago !== 'Pagado' ? `<button class="btn-accion btn-pagar" onclick="actualizarFila(${fila.filaExcel}, 'pagar')">💰 Pagar</button>` : ''}
-                    ${envio !== 'Entregado' ? `<button class="btn-accion btn-llegar" onclick="actualizarFila(${fila.filaExcel}, 'llegar')">📦 Llegó</button>` : ''}
+                    ${entrega !== 'Entregado' ? `<button class="btn-accion btn-llegar" onclick="actualizarFila(${fila.filaExcel}, 'llegar')">📦 Llegó</button>` : ''}
                 </td>
             `;
             tbody.appendChild(tr);
         });
     }
 
-    // 3. Enviar nuevo pedido
     document.getElementById('formPedido').addEventListener('submit', async (e) => {
         e.preventDefault();
         const boton = e.target.querySelector('button');
@@ -158,11 +154,11 @@ https://script.google.com/macros/s/AKfycbxPuh36oQjhWLaGCKtZ6JoVEUD2l0Zo5ud60SZUn
         
         const nuevoPedido = {
             accion: "nuevo",
-            fecha: document.getElementById('fecha').value,
-            origen: document.getElementById('origen').value,
-            tueste: document.getElementById('tueste').value,
+            guias: document.getElementById('guias').value,
+            region: document.getElementById('region').value,
             cantidad: document.getElementById('cantidad').value,
-            costo: document.getElementById('costo').value
+            descripcion: document.getElementById('descripcion').value,
+            monto: document.getElementById('monto').value
         };
 
         await fetch(API_URL, {
@@ -172,19 +168,14 @@ https://script.google.com/macros/s/AKfycbxPuh36oQjhWLaGCKtZ6JoVEUD2l0Zo5ud60SZUn
         
         e.target.reset();
         boton.innerText = "Registrar Pedido";
-        cargarDatos(); // Recargar la tabla
+        cargarDatos(); 
     });
 
-    // 4. Actualizar estado (Pagar o Llegar)
     async function actualizarFila(filaExcel, accion) {
-        // Mostrar feedback visual
         document.getElementById('loading').innerText = "Actualizando...";
         document.getElementById('loading').style.display = 'block';
 
-        const payload = {
-            accion: accion,
-            filaExcel: filaExcel
-        };
+        const payload = { accion: accion, filaExcel: filaExcel };
 
         await fetch(API_URL, {
             method: 'POST',
@@ -192,12 +183,10 @@ https://script.google.com/macros/s/AKfycbxPuh36oQjhWLaGCKtZ6JoVEUD2l0Zo5ud60SZUn
         });
         
         document.getElementById('loading').innerText = "Cargando base de datos...";
-        cargarDatos(); // Recargar para ver los cambios
+        cargarDatos(); 
     }
 
-    // 5. Filtros visuales
     function filtrar(tipo) {
-        // Cambiar estilo de botones
         document.querySelectorAll('.btn-filtro').forEach(b => b.classList.remove('activo'));
         event.target.classList.add('activo');
 
@@ -205,24 +194,14 @@ https://script.google.com/macros/s/AKfycbxPuh36oQjhWLaGCKtZ6JoVEUD2l0Zo5ud60SZUn
         if (tipo === 'todos') {
             filtrados = datosGlobales;
         } else if (tipo === 'pendientes_pago') {
-            // Ajusta el nombre de la propiedad según tus encabezados
-            filtrados = datosGlobales.filter(f => (f.Estado_Pago || f['Pago']) !== 'Pagado');
+            filtrados = datosGlobales.filter(f => f['STATUS DE PAGO'] !== 'Pagado');
         } else if (tipo === 'en_camino') {
-            filtrados = datosGlobales.filter(f => (f.Estado_Envío || f['Envío']) !== 'Entregado');
+            filtrados = datosGlobales.filter(f => f['STATUS DE ENTREGA'] !== 'Entregado');
         }
         
         renderizarTabla(filtrados);
     }
     
-    function formatearFecha(fechaStr) {
-        if(!fechaStr) return '';
-        const f = new Date(fechaStr);
-        // Si la fecha no es válida, retorna el string original
-        if (isNaN(f.getTime())) return fechaStr; 
-        return f.toLocaleDateString('es-MX');
-    }
-
-    // Iniciar
     cargarDatos();
 </script>
 
