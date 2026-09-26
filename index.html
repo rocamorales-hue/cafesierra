@@ -110,7 +110,7 @@
   .vista { display: none; opacity: 0; transform: translateY(10px); transition: all 0.4s ease-out; }
   .vista.activa { display: block; opacity: 1; transform: translateY(0); }
 
-  /* --- NUEVA TARJETA RESUMEN COMPACTA (Estilo Píldora) --- */
+  /* --- Tarjeta Resumen Compacta (Píldora) --- */
   .resumen-container {
     margin-bottom: 1.5rem;
     display: flex;
@@ -122,7 +122,7 @@
     background: linear-gradient(135deg, var(--brand-green) 0%, #0d4f35 100%);
     color: #ffffff;
     padding: 10px 20px;
-    border-radius: 50px; /* Forma de píldora moderna */
+    border-radius: 50px;
     font-size: 0.95rem;
     gap: 16px;
     box-shadow: 0 6px 20px rgba(15, 99, 67, 0.2);
@@ -148,7 +148,7 @@
   }
   
   .highlight-money {
-    color: #ffd166; /* Tono dorado elegante para el dinero */
+    color: #ffd166;
     font-weight: bold;
   }
   
@@ -204,6 +204,22 @@
   
   .btn-secundario { background: var(--surface); color: var(--ink); border: 2px solid #E2E8F0; }
   .btn-secundario:hover { border-color: var(--ink-soft); background: #F1F5F9; }
+
+  /* Botón de Eliminar minimalista */
+  .btn-eliminar {
+    background: transparent;
+    color: #94A3B8;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.2s;
+  }
+  .btn-eliminar:hover {
+    background: #FEE2E2;
+    color: #DC2626;
+  }
   
   /* --- Tabla Mejorada --- */
   .tabla-envoltura {
@@ -376,7 +392,6 @@
 <main>
   <!-- ===== HISTORIAL ===== -->
   <section id="vista-historial" class="vista activa">
-    <!-- NUEVO CONTENEDOR DE LA PÍLDORA COMPACTA -->
     <div class="resumen-container">
       <div class="notification-pill" id="resumen">
         <div class="pill-item">
@@ -431,6 +446,7 @@
             <th>Entrega</th>
             <th>Pago</th>
             <th>Fecha pago</th>
+            <th style="text-align: center;">Acción</th>
           </tr>
         </thead>
         <tbody id="tabla-body"></tbody>
@@ -623,7 +639,6 @@ function renderTabla(){
   const pendPago = pedidosCache.filter(p => p.status_pago === 'PENDIENTE');
   const montoPendiente = pendPago.reduce((s,p) => s + (Number(p.monto) || 0), 0);
   
-  // Renderizado optimizado para la nueva píldora compacta
   document.getElementById('resumen').innerHTML = `
     <div class="pill-item">
       <span>🚚</span>
@@ -679,6 +694,9 @@ function renderTabla(){
         </span>
       </td>
       <td class="num" id="fecha-${p.folio}">${fechaPagoFormateada}</td>
+      <td style="text-align: center;">
+        <button class="btn-eliminar" onclick="confirmarEliminar('${p.folio}')" title="Eliminar este pedido">🗑️</button>
+      </td>
     `;
     tbody.appendChild(tr);
   });
@@ -695,7 +713,7 @@ function animarFilaActualizada(folio) {
   }
 }
 
-/* ---------- Interacciones de Clic ---------- */
+/* ---------- Interacciones de Clic (Entrega y Pago) ---------- */
 window.toggleEntrega = function(folio, estadoActual) {
   const nuevoEstado = estadoActual === 'ENTREGADO' ? 'PENDIENTE' : 'ENTREGADO';
   
@@ -737,6 +755,31 @@ async function actualizarPedido(folio, cambios, msjExito){
   }catch(err){
     mostrarToast('No se pudo guardar el cambio en la base de datos', 'error');
     cargarHistorial(true); 
+  }
+}
+
+/* ---------- Eliminar Pedido ---------- */
+window.confirmarEliminar = function(folio) {
+  if(confirm(`¿Estás completamente seguro de que deseas eliminar el pedido #${folio}? Esta acción no se puede deshacer.`)) {
+    eliminarPedido(folio);
+  }
+}
+
+async function eliminarPedido(folio) {
+  mostrarToast(`Eliminando pedido #${folio}...`, 'info');
+  try {
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ action: 'eliminar', folio })
+    });
+    const data = await res.json();
+    if(!data.ok) throw new Error(data.error || 'No se pudo eliminar');
+
+    mostrarToast(`Pedido #${folio} eliminado correctamente`, 'exito');
+    cargarHistorial(true);
+  } catch(err) {
+    mostrarToast('Error al intentar eliminar el pedido', 'error');
   }
 }
 
