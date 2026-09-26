@@ -3,211 +3,333 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Pedidos de café</title>
+<title>Café Sierra Escondida - Pedidos</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-  :root{
-    --bg:#F3ECDD;
-    --surface:#FFFFFF;
-    --ink:#2B1B12;
-    --ink-soft:#6B5745;
-    --espresso:#3E2723;
-    --rust:#8C4A2F;
-    --rust-dark:#6E3A24;
-    --sage:#4F6F52;
-    --sage-bg:#E3EBE0;
-    --slate:#3E5C76;
-    --slate-bg:#E1E8EE;
-    --amber:#C98A2B;
-    --amber-bg:#F5E8CE;
-    --line:#D8C9AE;
+  :root {
+    /* Paleta basada en el logo de Café Sierra Escondida */
+    --brand-orange: #F3A022;
+    --brand-orange-dark: #D98918;
+    --brand-green: #0F6343;
+    --brand-dark: #1C1C1C;
+    
+    --bg: #F8F5F0;
+    --surface: #FFFFFF;
+    --ink: #333333;
+    --ink-soft: #666666;
+    
+    --line: #E5DED5;
+    --shadow: rgba(0, 0, 0, 0.08);
+    
+    /* Estados */
+    --state-amber: #C98A2B;
+    --state-amber-bg: #FDF3E1;
+    --state-slate: #3E5C76;
+    --state-slate-bg: #EAF0F6;
+    --state-sage: #0F6343;
+    --state-sage-bg: #E1F0EA;
+
     --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     --serif: "Source Serif 4", Georgia, serif;
   }
-  *{ box-sizing:border-box; }
-  html{ scroll-padding-top: env(safe-area-inset-top,0px); }
-  body{
-    margin:0;
-    background:var(--bg);
-    color:var(--ink);
-    font-family:var(--sans);
-    padding-top: env(safe-area-inset-top,0px);
-    padding-bottom: env(safe-area-inset-bottom,0px);
+  
+  * { box-sizing: border-box; }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--sans);
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    -webkit-font-smoothing: antialiased;
   }
-  header{
-    background:var(--espresso);
-    color:var(--bg);
-    padding:1.1rem 1.25rem;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    flex-wrap:wrap;
-    gap:.75rem;
+
+  /* --- Header / Navegación --- */
+  header {
+    background: var(--brand-dark);
+    color: #fff;
+    padding: 1.25rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   }
-  header h1{
-    font-family:var(--serif);
-    font-size:1.35rem;
-    font-weight:700;
-    margin:0;
-    letter-spacing:.01em;
+  
+  .brand-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
   }
-  header p{
-    margin:.15rem 0 0;
-    font-size:.85rem;
-    color:#D8C9AE;
+  
+  .logo {
+    width: 65px;
+    height: auto;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
   }
-  nav{ display:flex; gap:.5rem; }
-  nav button{
-    background:transparent;
-    border:1px solid rgba(243,236,221,.35);
-    color:var(--bg);
-    padding:.5rem 1rem;
-    border-radius:6px;
-    font-size:.9rem;
-    cursor:pointer;
+  
+  header h1 {
+    font-family: var(--serif);
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin: 0;
+    letter-spacing: 0.02em;
+    color: var(--brand-orange);
   }
-  nav button.active{
-    background:var(--bg);
-    color:var(--espresso);
-    border-color:var(--bg);
-    font-weight:600;
+  
+  header p {
+    margin: 0.2rem 0 0;
+    font-size: 0.85rem;
+    color: #E5DED5;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
   }
-  main{
-    max-width:960px;
-    margin:0 auto;
-    padding:1.5rem 1.25rem 3rem;
+  
+  nav { display: flex; gap: 0.75rem; }
+  nav button {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.2);
+    color: #fff;
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
   }
-  .vista{ display:none; }
-  .vista.activa{ display:block; }
+  nav button:hover {
+    background: rgba(255,255,255,0.1);
+  }
+  nav button.active {
+    background: var(--brand-orange);
+    color: var(--brand-dark);
+    border-color: var(--brand-orange);
+    font-weight: 600;
+  }
+
+  /* --- Layout principal --- */
+  main {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+  }
+  .vista { display: none; animation: fadeIn 0.3s ease; }
+  .vista.activa { display: block; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
 
   /* --- Historial --- */
-  .resumen{
-    background:var(--surface);
-    border:1px solid var(--line);
-    border-radius:8px;
-    padding:.9rem 1.1rem;
-    margin-bottom:1rem;
-    font-size:.95rem;
+  .resumen {
+    background: var(--brand-green);
+    color: white;
+    border-radius: 10px;
+    padding: 1.2rem 1.5rem;
+    margin-bottom: 1.5rem;
+    font-size: 1.05rem;
+    box-shadow: 0 4px 6px var(--shadow);
   }
-  .resumen strong{ color:var(--rust-dark); }
-  .filtros{
-    display:flex;
-    flex-wrap:wrap;
-    gap:.6rem;
-    margin-bottom:1rem;
-    align-items:end;
+  .resumen strong { color: var(--brand-orange); font-weight: 700; }
+  
+  .filtros {
+    background: var(--surface);
+    padding: 1.2rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px var(--shadow);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    align-items: end;
   }
-  .campo{ display:flex; flex-direction:column; gap:.3rem; }
-  .campo label{ font-size:.78rem; color:var(--ink-soft); }
-  select, input[type=text], input[type=number], input[type=date]{
-    font-family:var(--sans);
-    font-size:.9rem;
-    padding:.5rem .6rem;
-    border:1px solid var(--line);
-    border-radius:6px;
-    background:var(--surface);
-    color:var(--ink);
+  
+  .campo { display: flex; flex-direction: column; gap: 0.4rem; }
+  .campo label { font-size: 0.85rem; color: var(--ink-soft); font-weight: 500; }
+  
+  select, input[type=text], input[type=number], input[type=date] {
+    font-family: var(--sans);
+    font-size: 0.95rem;
+    padding: 0.6rem 0.8rem;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--bg);
+    color: var(--ink);
+    transition: border-color 0.2s;
   }
-  select:focus, input:focus{ outline:2px solid var(--rust); outline-offset:1px; }
-  .btn{
-    font-family:var(--sans);
-    font-size:.88rem;
-    padding:.55rem 1rem;
-    border-radius:6px;
-    border:none;
-    cursor:pointer;
-    font-weight:600;
+  select:focus, input:focus { 
+    outline: none; 
+    border-color: var(--brand-orange); 
+    box-shadow: 0 0 0 3px rgba(243, 160, 34, 0.2);
   }
-  .btn-primario{ background:var(--rust); color:#fff; }
-  .btn-primario:hover{ background:var(--rust-dark); }
-  .btn-secundario{ background:var(--surface); color:var(--ink); border:1px solid var(--line); }
-  .btn-fila{ font-size:.78rem; padding:.35rem .6rem; border-radius:5px; border:none; cursor:pointer; margin-right:.35rem; white-space:nowrap; }
-  .btn-entregar{ background:var(--slate-bg); color:var(--slate); }
-  .btn-pagar{ background:var(--sage-bg); color:var(--sage); }
+  
+  .btn {
+    font-family: var(--sans);
+    font-size: 0.95rem;
+    padding: 0.65rem 1.2rem;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s ease;
+  }
+  .btn-primario { background: var(--brand-orange); color: var(--brand-dark); }
+  .btn-primario:hover { background: var(--brand-orange-dark); transform: translateY(-1px); }
+  
+  .btn-secundario { background: var(--surface); color: var(--ink); border: 1px solid var(--line); }
+  .btn-secundario:hover { background: var(--bg); }
+  
+  .btn-fila { 
+    font-size: 0.8rem; 
+    padding: 0.4rem 0.8rem; 
+    border-radius: 6px; 
+    border: none; 
+    cursor: pointer; 
+    margin-right: 0.4rem; 
+    margin-bottom: 0.4rem;
+    white-space: nowrap; 
+    font-weight: 500;
+    transition: opacity 0.2s;
+  }
+  .btn-fila:hover { opacity: 0.8; }
+  .btn-entregar { background: var(--state-slate-bg); color: var(--state-slate); }
+  .btn-pagar { background: var(--state-sage-bg); color: var(--state-sage); }
 
-  .tabla-envoltura{
-    overflow-x:auto;
-    border:1px solid var(--line);
-    border-radius:8px;
-    background:var(--surface);
+  /* --- Tabla --- */
+  .tabla-envoltura {
+    overflow-x: auto;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: var(--surface);
+    box-shadow: 0 4px 12px var(--shadow);
   }
-  table{ border-collapse:collapse; width:100%; font-size:.86rem; }
-  thead th{
-    text-align:left;
-    padding:.65rem .7rem;
-    background:#EDE3CD;
-    color:var(--espresso);
-    font-weight:600;
-    border-bottom:1px solid var(--line);
-    white-space:nowrap;
+  /* Estilizado del scroll para webkit */
+  .tabla-envoltura::-webkit-scrollbar { height: 8px; }
+  .tabla-envoltura::-webkit-scrollbar-track { background: var(--bg); }
+  .tabla-envoltura::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
+  
+  table { border-collapse: collapse; width: 100%; font-size: 0.9rem; }
+  thead th {
+    text-align: left;
+    padding: 1rem;
+    background: var(--bg);
+    color: var(--brand-dark);
+    font-weight: 600;
+    border-bottom: 2px solid var(--line);
+    white-space: nowrap;
   }
-  tbody td{
-    padding:.6rem .7rem;
-    border-bottom:1px solid #EFE7D6;
-    vertical-align:middle;
+  tbody td {
+    padding: 1rem;
+    border-bottom: 1px solid var(--line);
+    vertical-align: middle;
   }
-  tbody tr:last-child td{ border-bottom:none; }
-  .num{ font-family:var(--mono); }
-  .estado{
-    display:inline-block;
-    padding:.15rem .55rem;
-    border-radius:20px;
-    font-size:.78rem;
-    font-weight:600;
+  tbody tr:hover td { background-color: rgba(0,0,0,0.01); }
+  tbody tr:last-child td { border-bottom: none; }
+  
+  .num { font-family: var(--mono); font-weight: 500;}
+  
+  .estado {
+    display: inline-block;
+    padding: 0.3rem 0.7rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
   }
-  .fila-en-camino .estado.entrega{ background:var(--amber-bg); color:var(--amber); }
-  .fila-entregado .estado.entrega{ background:var(--slate-bg); color:var(--slate); }
-  .fila-pagado .estado.entrega{ background:var(--slate-bg); color:var(--slate); }
-  .estado.pago-pendiente{ background:var(--amber-bg); color:var(--amber); }
-  .estado.pago-pagado{ background:var(--sage-bg); color:var(--sage); }
-  .estado-vacio{
-    padding:2rem 1rem;
-    text-align:center;
-    color:var(--ink-soft);
-    font-size:.9rem;
+  .fila-en-camino .estado.entrega { background: var(--state-amber-bg); color: var(--state-amber); }
+  .fila-entregado .estado.entrega { background: var(--state-slate-bg); color: var(--state-slate); }
+  .fila-pagado .estado.entrega { background: var(--state-slate-bg); color: var(--state-slate); }
+  
+  .estado.pago-pendiente { background: var(--state-amber-bg); color: var(--state-amber); }
+  .estado.pago-pagado { background: var(--state-sage-bg); color: var(--state-sage); }
+  
+  .estado-vacio {
+    padding: 3rem 1rem;
+    text-align: center;
+    color: var(--ink-soft);
+    font-size: 1rem;
   }
 
   /* --- Formulario --- */
-  .formulario{
-    background:var(--surface);
-    border:1px solid var(--line);
-    border-radius:8px;
-    padding:1.5rem;
-    max-width:480px;
+  .formulario-container {
+    display: flex;
+    justify-content: center;
   }
-  .formulario h2{
-    font-family:var(--serif);
-    font-size:1.15rem;
-    margin:0 0 1rem;
-    color:var(--espresso);
+  .formulario {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 2rem;
+    width: 100%;
+    max-width: 550px;
+    box-shadow: 0 8px 24px var(--shadow);
   }
-  .formulario .campo{ margin-bottom:.9rem; width:100%; }
-  .formulario label{ font-size:.85rem; color:var(--ink-soft); margin-bottom:.25rem; }
-  .formulario select, .formulario input{ width:100%; }
-  .fila-doble{ display:flex; gap:.8rem; }
-  .fila-doble .campo{ flex:1; }
-  .check{ display:flex; align-items:center; gap:.5rem; margin:1rem 0; }
-  .check input{ width:auto; }
-  .check label{ font-size:.85rem; color:var(--ink); margin:0; }
-  #mensaje-form{ margin-top:.9rem; font-size:.88rem; }
-  #mensaje-form.ok{ color:var(--sage); }
-  #mensaje-form.error{ color:var(--rust-dark); }
+  .formulario h2 {
+    font-family: var(--serif);
+    font-size: 1.5rem;
+    margin: 0 0 1.5rem;
+    color: var(--brand-dark);
+    border-bottom: 2px solid var(--brand-orange);
+    padding-bottom: 0.5rem;
+    display: inline-block;
+  }
+  .formulario .campo { margin-bottom: 1.2rem; width: 100%; }
+  .formulario select, .formulario input { width: 100%; }
+  
+  .fila-doble { display: flex; gap: 1rem; }
+  .fila-doble .campo { flex: 1; }
+  
+  .check { 
+    display: flex; 
+    align-items: center; 
+    gap: 0.5rem; 
+    margin: 1.5rem 0; 
+    padding: 1rem;
+    background: var(--bg);
+    border-radius: 8px;
+    border: 1px solid var(--line);
+  }
+  .check input { width: auto; transform: scale(1.2); accent-color: var(--brand-orange); }
+  .check label { font-size: 0.9rem; color: var(--ink); margin: 0; font-weight: 500; cursor: pointer; }
+  
+  .formulario .btn-primario { width: 100%; padding: 0.8rem; font-size: 1rem; }
+  
+  #mensaje-form { margin-top: 1rem; font-size: 0.95rem; text-align: center; font-weight: 500; }
+  #mensaje-form.ok { color: var(--brand-green); }
+  #mensaje-form.error { color: #D32F2F; }
 
-  @media (max-width:640px){
-    .fila-doble{ flex-direction:column; }
-    header{ flex-direction:column; align-items:flex-start; }
+  /* --- Responsive --- */
+  @media (max-width: 768px) {
+    header { flex-direction: column; align-items: flex-start; padding: 1rem 1.5rem; }
+    .brand-container { margin-bottom: 0.5rem; }
+    nav { width: 100%; overflow-x: auto; padding-bottom: 0.5rem; }
+    nav button { flex: 1; white-space: nowrap; text-align: center; }
+    
+    .filtros { flex-direction: column; align-items: stretch; }
+    .filtros .campo { width: 100%; }
+    .filtros .btn { margin-top: 0.5rem; }
+    
+    .fila-doble { flex-direction: column; gap: 0; }
+    
+    .formulario { padding: 1.5rem; }
   }
 </style>
 </head>
 <body>
 
 <header>
-  <div>
-    <h1>Pedidos de café</h1>
-    <p>Chiapas · Veracruz</p>
+  <div class="brand-container">
+    <img src="logo con colores sin fondo.jpg" alt="Café Sierra Escondida Logo" class="logo">
+    <div>
+      <h1>Café Sierra Escondida</h1>
+      <p>Lo mejor de México en tu taza</p>
+    </div>
   </div>
   <nav>
     <button id="tab-historial" class="active">Historial</button>
@@ -247,9 +369,9 @@
           <option value="PAGADO">Pagado</option>
         </select>
       </div>
-      <div class="campo" style="flex:1; min-width:160px;">
+      <div class="campo" style="flex:1; min-width:200px;">
         <label for="f-buscar">Buscar</label>
-        <input type="text" id="f-buscar" placeholder="folio, guía, descripción…">
+        <input type="text" id="f-buscar" placeholder="Folio, guía, descripción…">
       </div>
       <button class="btn btn-secundario" id="btn-refrescar">Actualizar</button>
     </div>
@@ -278,63 +400,66 @@
 
   <!-- ===== FORMULARIO ===== -->
   <section id="vista-formulario" class="vista">
-    <form class="formulario" id="form-pedido">
-      <h2>Registrar nuevo pedido</h2>
+    <div class="formulario-container">
+      <form class="formulario" id="form-pedido">
+        <h2>Registrar nuevo pedido</h2>
 
-      <div class="campo">
-        <label for="f-in-region">Región</label>
-        <select id="f-in-region" required>
-          <option value="CHIAPAS">Chiapas</option>
-          <option value="VERACRUZ">Veracruz</option>
-          <option value="OTRA">Otra</option>
-        </select>
-      </div>
-
-      <div class="fila-doble">
         <div class="campo">
-          <label for="f-in-cantidad">Cantidad (kg)</label>
-          <input type="number" id="f-in-cantidad" step="0.1" min="0" required>
-        </div>
-        <div class="campo">
-          <label for="f-in-monto">Monto ($)</label>
-          <input type="number" id="f-in-monto" step="0.01" min="0" required>
-        </div>
-      </div>
-
-      <div class="campo">
-        <label for="f-in-descripcion">Descripción</label>
-        <input type="text" id="f-in-descripcion" placeholder="ej. MEZCLA ESP, MOLIDO KG">
-      </div>
-
-      <div class="fila-doble">
-        <div class="campo">
-          <label for="f-in-guia">Número de guía (si ya la tienes)</label>
-          <input type="text" id="f-in-guia">
-        </div>
-        <div class="campo">
-          <label for="f-in-paqueteria">Paquetería</label>
-          <select id="f-in-paqueteria">
-            <option value="">—</option>
-            <option value="PAQUETE EXPRESS">Paquete Express</option>
-            <option value="CORREOS MEXICO">Correos México</option>
-            <option value="ESTAFETA">Estafeta</option>
+          <label for="f-in-region">Región</label>
+          <select id="f-in-region" required>
+            <option value="CHIAPAS">Chiapas</option>
+            <option value="VERACRUZ">Veracruz</option>
+            <option value="OTRA">Otra</option>
           </select>
         </div>
-      </div>
 
-      <div class="check">
-        <input type="checkbox" id="f-in-cargo">
-        <label for="f-in-cargo">Es un cargo de envío, no un pedido de café</label>
-      </div>
+        <div class="fila-doble">
+          <div class="campo">
+            <label for="f-in-cantidad">Cantidad (kg)</label>
+            <input type="number" id="f-in-cantidad" step="0.1" min="0" required>
+          </div>
+          <div class="campo">
+            <label for="f-in-monto">Monto ($)</label>
+            <input type="number" id="f-in-monto" step="0.01" min="0" required>
+          </div>
+        </div>
 
-      <button type="submit" class="btn btn-primario">Guardar pedido</button>
-      <div id="mensaje-form"></div>
-    </form>
+        <div class="campo">
+          <label for="f-in-descripcion">Descripción</label>
+          <input type="text" id="f-in-descripcion" placeholder="ej. MEZCLA ESP, MOLIDO KG">
+        </div>
+
+        <div class="fila-doble">
+          <div class="campo">
+            <label for="f-in-guia">Número de guía (opcional)</label>
+            <input type="text" id="f-in-guia">
+          </div>
+          <div class="campo">
+            <label for="f-in-paqueteria">Paquetería</label>
+            <select id="f-in-paqueteria">
+              <option value="">—</option>
+              <option value="PAQUETE EXPRESS">Paquete Express</option>
+              <option value="CORREOS MEXICO">Correos México</option>
+              <option value="ESTAFETA">Estafeta</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="check">
+          <input type="checkbox" id="f-in-cargo">
+          <label for="f-in-cargo">Es un cargo de envío, no un pedido de café</label>
+        </div>
+
+        <button type="submit" class="btn btn-primario">Guardar pedido</button>
+        <div id="mensaje-form"></div>
+      </form>
+    </div>
   </section>
 
 </main>
 
 <script>
+/* Toda la lógica JS se mantiene 100% igual y funcional, conectando con Google Apps Script */
 const API_URL = "https://script.google.com/macros/s/AKfycbwESLMHq0qg9bz5glQX5zqCkOh5Fprpdpn1lpNNrdQwAobGQOlB8OW1GkETEx9j6Arf/exec";
 
 /* ---------- navegación entre pestañas ---------- */
@@ -503,7 +628,7 @@ document.getElementById('form-pedido').addEventListener('submit', async function
     const data = await res.json();
     if(!data.ok) throw new Error(data.error || 'Error desconocido');
     mensaje.className = 'ok';
-    mensaje.textContent = `Guardado como folio #${data.folio}.`;
+    mensaje.textContent = `Guardado exitosamente con el folio #${data.folio}.`;
     this.reset();
     cargarHistorial();
   }catch(err){
