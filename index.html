@@ -105,8 +105,9 @@
   nav button:hover:not(.active) { color: var(--brand-green); background: rgba(15, 99, 67, 0.05); }
   nav button.active { background: var(--surface); color: var(--brand-green); box-shadow: 0 2px 8px var(--shadow); }
 
-  /* --- Layout principal --- */
-  main { max-width: 1200px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+  /* --- Layout principal Fluido --- */
+  /* Ajustado al 96% de la pantalla para aprovechar todo el ancho disponible */
+  main { width: 96%; max-width: 1800px; margin: 0 auto; padding: 2rem 1rem 4rem; }
   .vista { display: none; opacity: 0; transform: translateY(10px); transition: all 0.4s ease-out; }
   .vista.activa { display: block; opacity: 1; transform: translateY(0); }
 
@@ -130,7 +131,7 @@
   /* --- Filtros Modernos --- */
   .filtros {
     background: var(--surface);
-    padding: 1.2rem;
+    padding: 1.2rem 1.5rem;
     border-radius: 16px;
     box-shadow: 0 4px 15px var(--shadow);
     display: flex;
@@ -182,7 +183,7 @@
   
   /* --- Tabla Mejorada --- */
   .tabla-envoltura {
-    overflow-x: auto;
+    overflow-x: auto; /* Solo genera scroll horizontal en pantallas pequeñas */
     border: 1px solid var(--line);
     border-radius: 16px;
     background: var(--surface);
@@ -209,7 +210,7 @@
   tbody tr:last-child td { border-bottom: none; }
   
   .num { font-family: var(--mono); font-weight: 600; color: var(--ink-soft); }
-  .col-desc { min-width: 280px; line-height: 1.5; font-weight: 500; }
+  .col-desc { min-width: 250px; line-height: 1.5; font-weight: 500; }
   
   /* Animación flash para cuando se actualiza una fila */
   @keyframes rowUpdate {
@@ -230,6 +231,7 @@
     font-family: var(--sans);
     user-select: none;
     letter-spacing: 0.02em;
+    white-space: nowrap;
   }
   
   .estado.interactivo { 
@@ -315,17 +317,18 @@
   .toast.error { border-left-color: #EF4444; }
   .toast.info { border-left-color: var(--brand-orange); }
 
-  /* Responsive */
+  /* Responsive para Móviles */
   @media (max-width: 768px) {
+    main { width: 100%; padding: 1rem; }
     header { padding: 1rem; justify-content: center; }
     .brand-container { width: 100%; justify-content: center; text-align: center; }
     nav { width: 100%; justify-content: space-between; }
     nav button { flex: 1; }
-    .resumen { flex-direction: column; text-align: center; }
+    .resumen { flex-direction: column; text-align: center; padding: 1.5rem; }
     .filtros { flex-direction: column; }
     .filtros .campo, .filtros button { width: 100%; }
     .fila-doble { flex-direction: column; gap: 0; }
-    .formulario { padding: 1.5rem; }
+    .formulario { padding: 1.5rem; border-radius: 12px; }
     .toast-container { bottom: 1rem; right: 1rem; left: 1rem; }
   }
 </style>
@@ -488,13 +491,11 @@ function mostrarToast(mensaje, tipo = 'exito') {
   toast.innerHTML = `<span style="font-size:1.3rem;">${icono}</span> <span>${mensaje}</span>`;
   container.appendChild(toast);
   
-  // Animar entrada
   setTimeout(() => toast.classList.add('show'), 10);
   
-  // Animar salida y remover
   setTimeout(() => {
     toast.classList.remove('show');
-    setTimeout(() => toast.remove(), 400); // Esperar a que termine CSS transition
+    setTimeout(() => toast.remove(), 400);
   }, 3500);
 }
 
@@ -502,7 +503,6 @@ function mostrarToast(mensaje, tipo = 'exito') {
 function formatearFecha(fechaIso) {
   if (!fechaIso) return '';
   try {
-    // Extraemos solo la parte de la fecha ignorando la hora (separada por T o espacio)
     const soloFecha = String(fechaIso).trim().split(/[T ]/)[0];
     const partes = soloFecha.split('-');
     
@@ -534,7 +534,6 @@ function cambiarVista(nombre){
   tabHistorial.classList.toggle('active', esHistorial);
   tabFormulario.classList.toggle('active', !esHistorial);
   
-  // Animación de desvanecimiento
   const vistaOcultar = esHistorial ? vistaFormulario : vistaHistorial;
   const vistaMostrar = esHistorial ? vistaHistorial : vistaFormulario;
   
@@ -544,7 +543,6 @@ function cambiarVista(nombre){
   setTimeout(() => {
     vistaOcultar.classList.remove('activa');
     vistaMostrar.classList.add('activa');
-    // Pequeño timeout para que el display:block tome efecto antes de animar opacidad
     setTimeout(() => {
       vistaMostrar.style.opacity = '1';
       vistaMostrar.style.transform = 'translateY(0)';
@@ -658,7 +656,7 @@ function animarFilaActualizada(folio) {
   const fila = document.getElementById(`fila-${folio}`);
   if(fila) {
     fila.classList.remove('fila-actualizada');
-    void fila.offsetWidth; // Forzar reflow para reiniciar animación CSS
+    void fila.offsetWidth; 
     fila.classList.add('fila-actualizada');
   }
 }
@@ -667,7 +665,6 @@ function animarFilaActualizada(folio) {
 window.toggleEntrega = function(folio, estadoActual) {
   const nuevoEstado = estadoActual === 'ENTREGADO' ? 'PENDIENTE' : 'ENTREGADO';
   
-  // UI Optimista
   const pedido = pedidosCache.find(p => p.folio == folio);
   if(pedido) pedido.status_entrega = nuevoEstado;
   renderTabla(); 
@@ -680,7 +677,6 @@ window.togglePago = function(folio, estadoActual) {
   const nuevoEstado = estadoActual === 'PAGADO' ? 'PENDIENTE' : 'PAGADO';
   const nuevaFecha = nuevoEstado === 'PAGADO' ? hoyISO() : '';
   
-  // UI Optimista
   const pedido = pedidosCache.find(p => p.folio == folio);
   if(pedido) {
     pedido.status_pago = nuevoEstado;
@@ -703,10 +699,10 @@ async function actualizarPedido(folio, cambios, msjExito){
     if(!data.ok) throw new Error(data.error);
     
     mostrarToast(msjExito, 'exito');
-    cargarHistorial(true); // Recarga silenciosa de fondo para sincronizar
+    cargarHistorial(true); 
   }catch(err){
     mostrarToast('No se pudo guardar el cambio en la base de datos', 'error');
-    cargarHistorial(true); // Revertir si hubo error
+    cargarHistorial(true); 
   }
 }
 
@@ -748,7 +744,6 @@ document.getElementById('form-pedido').addEventListener('submit', async function
     this.reset();
     cargarHistorial(true);
     
-    // Regresar a la pestaña historial tras éxito
     setTimeout(() => { cambiarVista('historial'); }, 1500);
     
   }catch(err){
@@ -760,7 +755,7 @@ document.getElementById('form-pedido').addEventListener('submit', async function
 });
 
 /* ---------- Inicialización ---------- */
-cargarHistorial(true); // Carga inicial silenciosa
+cargarHistorial(true);
 </script>
 
 </body>
