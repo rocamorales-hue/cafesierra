@@ -222,7 +222,7 @@
     border-radius: 14px;
     background: var(--surface);
     box-shadow: 0 10px 30px var(--shadow);
-    overflow: hidden; /* Evita barras de desplazamiento laterales */
+    overflow: hidden;
   }
   
   table { border-collapse: collapse; width: 100%; font-size: 0.88rem; text-align: left; table-layout: fixed; }
@@ -254,11 +254,10 @@
   tbody tr:hover td { background-color: #F8FAFC; }
   tbody tr:last-child td { border-bottom: none; }
   
-  /* Anchos de columna proporcionales ajustados a pantalla completa */
   th:nth-child(1), td:nth-child(1) { width: 6.5%; }   /* Folio */
   th:nth-child(2), td:nth-child(2) { width: 9.5%; }   /* Región */
   th:nth-child(3), td:nth-child(3) { width: 12.5%; }  /* Guía / Paq */
-  th:nth-child(4), td:nth-child(4) { width: 28%; }    /* Descripción (Amplia) */
+  th:nth-child(4), td:nth-child(4) { width: 28%; }    /* Descripción */
   th:nth-child(5), td:nth-child(5) { width: 5.5%; }   /* Kg */
   th:nth-child(6), td:nth-child(6) { width: 8.5%; }   /* Monto */
   th:nth-child(7), td:nth-child(7) { width: 11%; }    /* Entrega */
@@ -373,6 +372,40 @@
   .toast.error { border-left-color: #EF4444; }
   .toast.info { border-left-color: var(--brand-orange); }
 
+  /* --- MONITOR DE ESTADO (NUEVO) --- */
+  .status-monitor {
+    position: fixed;
+    bottom: 2rem;
+    left: 2rem;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    padding: 0.6rem 1.2rem;
+    border-radius: 50px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    box-shadow: 0 4px 15px var(--shadow);
+    z-index: 1000;
+    transition: all 0.3s ease;
+  }
+  .status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+  }
+  .dot-online { background: var(--brand-green); box-shadow: 0 0 8px var(--brand-green); }
+  .dot-sync { background: var(--brand-orange); animation: pulse 1.5s infinite; }
+  .dot-error { background: #EF4444; box-shadow: 0 0 8px #EF4444; }
+  .dot-offline { background: var(--ink-soft); }
+  
+  @keyframes pulse {
+    0% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.2); }
+    100% { opacity: 1; transform: scale(1); }
+  }
+
   /* --- Modal de Fecha de Pago --- */
   .modal-dialog {
     border: none;
@@ -411,8 +444,8 @@
     .brand-container { justify-content: center; }
     .notification-pill { justify-content: center; width: 100%; }
     nav { justify-content: center; width: 100%; }
-    
-    /* En pantallas pequeñas permitimos scroll horizontal controlado en la tabla */
+    .status-monitor { bottom: 1rem; left: 1rem; }
+    .toast-container { bottom: 1rem; right: 1rem; }
     .tabla-envoltura { overflow-x: auto; }
     table { min-width: 900px; table-layout: auto; }
   }
@@ -432,7 +465,7 @@
   <!-- Píldora de Resumen incrustada en el Header -->
   <div class="notification-pill" id="resumen">
     <div class="pill-item">
-      <span>☕ Sincronizando...</span>
+      <span>☕ Iniciando...</span>
     </div>
   </div>
 
@@ -576,12 +609,42 @@
   </div>
 </dialog>
 
-<!-- Contenedor para Notificaciones -->
+<!-- Contenedores -->
 <div id="toast-container" class="toast-container"></div>
+<div id="status-monitor" class="status-monitor">
+  <div id="sm-dot" class="status-dot dot-online"></div>
+  <span id="sm-text">Iniciando...</span>
+</div>
 
 <script>
-// AQUÍ VA TU NUEVA URL DE LA APLICACIÓN WEB DE APPS SCRIPT
 const API_URL = "https://script.google.com/macros/s/AKfycbzhhL1YxAiqXj_LmSPLIe6jsJSgkyw_ejgUmEll4EynBKwDSbDPu009XBbKlAwxxuo/exec";
+
+/* ---------- Monitor de Estado y Fetch Seguro ---------- */
+const statusText = document.getElementById('sm-text');
+const statusDot = document.getElementById('sm-dot');
+
+function setAppStatus(state, msg) {
+  statusText.textContent = msg;
+  statusDot.className = 'status-dot'; 
+  if(state === 'online') statusDot.classList.add('dot-online');
+  if(state === 'sync') statusDot.classList.add('dot-sync');
+  if(state === 'error') statusDot.classList.add('dot-error');
+  if(state === 'offline') statusDot.classList.add('dot-offline');
+}
+
+// Detectar si se cae el Internet local
+window.addEventListener('online', () => setAppStatus('online', 'Internet conectado'));
+window.addEventListener('offline', () => setAppStatus('offline', 'Sin Internet'));
+
+// Función Fetch con tiempo límite de espera (Timeout de 15 segundos)
+async function fetchConTimeout(resource, options = {}) {
+  const { timeout = 15000 } = options; 
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), timeout);
+  const response = await fetch(resource, { ...options, signal: controller.signal });
+  clearTimeout(id);
+  return response;
+}
 
 /* ---------- Sistema de Notificaciones (Toasts) ---------- */
 function mostrarToast(mensaje, tipo = 'exito') {
@@ -604,28 +667,22 @@ function mostrarToast(mensaje, tipo = 'exito') {
   }, 3500);
 }
 
-/* ---------- Formateador de Fecha dd/mmm/aaaa (ROBUSTO) ---------- */
+/* ---------- Formateador de Fecha ---------- */
 function formatearFecha(fechaIso) {
   if (!fechaIso) return '';
   try {
     const soloFecha = String(fechaIso).trim().split(/[T ]/)[0];
     const partes = soloFecha.split('-');
-    
     if(partes.length !== 3) return fechaIso;
-    
     const año = parseInt(partes[0], 10);
     const mes = parseInt(partes[1], 10) - 1;
     const dia = parseInt(partes[2], 10);
-    
     const fechaObj = new Date(año, mes, dia);
     if (isNaN(fechaObj.getTime())) return fechaIso;
-    
     const opciones = { day: '2-digit', month: 'short', year: 'numeric' };
     let formateada = fechaObj.toLocaleDateString('es-MX', opciones).replace(/\./g, ''); 
     return formateada.split(' ').join('/');
-  } catch(e) {
-    return fechaIso;
-  }
+  } catch(e) { return fechaIso; }
 }
 
 /* ---------- Navegación ---------- */
@@ -662,18 +719,31 @@ tabFormulario.addEventListener('click', () => cambiarVista('formulario'));
 let pedidosCache = [];
 
 async function cargarHistorial(silencioso = false){
+  if(!navigator.onLine) {
+    setAppStatus('offline', 'Sin Internet');
+    return;
+  }
+  
   if(!silencioso) mostrarToast('Actualizando datos...', 'info');
+  setAppStatus('sync', 'Descargando datos...');
   
   try{
-    const res = await fetch(API_URL);
+    const res = await fetchConTimeout(API_URL);
     const data = await res.json();
     if(!data.ok) throw new Error(data.error || 'Error desconocido');
     
     pedidosCache = data.pedidos.filter(p => p.tipo_registro !== 'CARGO_ENVIO');
     renderTabla();
     if(!silencioso) mostrarToast('Información actualizada con éxito', 'exito');
+    setAppStatus('online', 'Sincronizado al día');
   }catch(err){
-    mostrarToast('Error al conectar con la base de datos', 'error');
+    if(err.name === 'AbortError') {
+      setAppStatus('error', 'Google no responde');
+      mostrarToast('El servidor de Google está tardando demasiado', 'error');
+    } else {
+      setAppStatus('error', 'Fallo de conexión');
+      mostrarToast('Error al conectar con la base de datos', 'error');
+    }
   }
 }
 
@@ -777,28 +847,24 @@ function animarFilaActualizada(folio) {
 /* ---------- Interacciones de Clic (Entrega y Pago) ---------- */
 window.toggleEntrega = function(folio, estadoActual) {
   const nuevoEstado = estadoActual === 'ENTREGADO' ? 'PENDIENTE' : 'ENTREGADO';
-  
   const pedido = pedidosCache.find(p => p.folio == folio);
   if(pedido) pedido.status_entrega = nuevoEstado;
+  
   renderTabla(); 
   animarFilaActualizada(folio);
-  
-  actualizarPedido(folio, { status_entrega: nuevoEstado }, 'Estatus de entrega actualizado');
+  actualizarPedido(folio, { status_entrega: nuevoEstado }, 'Estatus de entrega guardado');
 };
 
-// --- NUEVA LÓGICA DE PAGO CON CALENDARIO ---
 let folioEnProceso = null;
 const modalFecha = document.getElementById('modal-fecha-pago');
 const inputFecha = document.getElementById('input-fecha-pago');
 
 window.togglePago = function(folio, estadoActual) {
   if (estadoActual === 'PAGADO') {
-    // Si ya estaba pagado, lo regresa a pendiente sin preguntar
     ejecutarCambioPago(folio, 'PENDIENTE', '');
   } else {
-    // Si estaba pendiente, abre el modal
     folioEnProceso = folio;
-    inputFecha.value = hoyISO(); // Sugiere el día de hoy por defecto
+    inputFecha.value = hoyISO();
     modalFecha.showModal();
   }
 };
@@ -811,10 +877,9 @@ function ejecutarCambioPago(folio, nuevoEstado, nuevaFecha) {
   }
   renderTabla();
   animarFilaActualizada(folio);
-  actualizarPedido(folio, { status_pago: nuevoEstado, fecha_pago: nuevaFecha }, 'Estatus de pago actualizado');
+  actualizarPedido(folio, { status_pago: nuevoEstado, fecha_pago: nuevaFecha }, 'Estatus de pago guardado');
 }
 
-// Eventos de los botones del modal
 document.getElementById('btn-cancelar-fecha').addEventListener('click', () => {
   modalFecha.close();
   folioEnProceso = null;
@@ -832,8 +897,15 @@ document.getElementById('btn-guardar-fecha').addEventListener('click', () => {
 });
 
 async function actualizarPedido(folio, cambios, msjExito){
+  if(!navigator.onLine) {
+    mostrarToast('No hay internet para guardar', 'error');
+    return;
+  }
+  
+  setAppStatus('sync', 'Guardando cambios...');
+  
   try{
-    const res = await fetch(API_URL, {
+    const res = await fetchConTimeout(API_URL, {
       method:'POST',
       headers:{'Content-Type':'text/plain;charset=utf-8'},
       body: JSON.stringify({action:'actualizar', folio, cambios})
@@ -842,10 +914,16 @@ async function actualizarPedido(folio, cambios, msjExito){
     if(!data.ok) throw new Error(data.error);
     
     mostrarToast(msjExito, 'exito');
-    cargarHistorial(true); 
+    setAppStatus('online', 'Cambio guardado en la nube');
+    
+    /* ¡EL GRAN CAMBIO ESTÁ AQUÍ! 
+       Ya NO llamamos a cargarHistorial(true) para no descargar TODA la base de datos de nuevo,
+       ya que el cambio ya se reflejó localmente en la tabla. Esto ahorra muchísimo tiempo. */
+       
   }catch(err){
-    mostrarToast('No se pudo guardar el cambio en la base de datos', 'error');
-    cargarHistorial(true); 
+    setAppStatus('error', 'Fallo al guardar');
+    mostrarToast('No se pudo guardar el cambio en la base de datos. Se revertirá.', 'error');
+    cargarHistorial(true); // Solo recarga todo si hubo un error para sincronizar la realidad
   }
 }
 
@@ -858,8 +936,9 @@ window.confirmarEliminar = function(folio) {
 
 async function eliminarPedido(folio) {
   mostrarToast(`Eliminando pedido #${folio}...`, 'info');
+  setAppStatus('sync', 'Borrando...');
   try {
-    const res = await fetch(API_URL, {
+    const res = await fetchConTimeout(API_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },
       body: JSON.stringify({ action: 'eliminar', folio: Number(folio) })
@@ -868,9 +947,10 @@ async function eliminarPedido(folio) {
     if(!data.ok) throw new Error(data.error || 'No se pudo eliminar');
 
     mostrarToast(`Pedido #${folio} eliminado correctamente`, 'exito');
+    setAppStatus('online', 'Sincronizado');
     cargarHistorial(true);
   } catch(err) {
-    console.error("Error al eliminar:", err);
+    setAppStatus('error', 'Error al borrar');
     mostrarToast('Error al intentar eliminar el pedido', 'error');
   }
 }
@@ -884,11 +964,18 @@ document.getElementById('btn-refrescar').addEventListener('click', () => cargarH
 document.getElementById('form-pedido').addEventListener('submit', async function(e){
   e.preventDefault();
   
+  if(!navigator.onLine) {
+    mostrarToast('No hay conexión a Internet', 'error');
+    return;
+  }
+  
   const btn = this.querySelector('button[type="submit"]');
   const textoOriginal = btn.textContent;
   btn.textContent = 'Guardando datos...';
   btn.disabled = true;
+  
   mostrarToast('Enviando información...', 'info');
+  setAppStatus('sync', 'Registrando pedido...');
 
   const pedido = {
     region: document.getElementById('f-in-region').value,
@@ -901,7 +988,7 @@ document.getElementById('form-pedido').addEventListener('submit', async function
   };
 
   try{
-    const res = await fetch(API_URL, {
+    const res = await fetchConTimeout(API_URL, {
       method:'POST',
       headers:{'Content-Type':'text/plain;charset=utf-8'},
       body: JSON.stringify({action:'crear', pedido})
@@ -910,13 +997,16 @@ document.getElementById('form-pedido').addEventListener('submit', async function
     if(!data.ok) throw new Error(data.error);
     
     mostrarToast(`¡Pedido #${data.folio} registrado con éxito!`, 'exito');
+    setAppStatus('online', 'Sincronizado');
     this.reset();
-    cargarHistorial(true);
     
+    // Al crear sí requerimos descargar todo para obtener el folio oficial de Google
+    cargarHistorial(true);
     setTimeout(() => { cambiarVista('historial'); }, 1500);
     
   }catch(err){
-    mostrarToast('Error al registrar pedido', 'error');
+    setAppStatus('error', 'Error al guardar');
+    mostrarToast('Error al registrar pedido o tiempo de espera agotado', 'error');
   } finally {
     btn.textContent = textoOriginal;
     btn.disabled = false;
