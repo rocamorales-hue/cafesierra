@@ -125,7 +125,14 @@
     font-weight: bold;
   }
   
-  /* --- Navegación Animada --- */
+  /* --- Navegación Animada y Monitor de Estatus --- */
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    flex-wrap: wrap;
+  }
+
   nav { display: flex; gap: 0.4rem; background: var(--bg); padding: 0.25rem; border-radius: 10px; border: 1px solid var(--line); }
   nav button {
     background: transparent;
@@ -140,6 +147,36 @@
   }
   nav button:hover:not(.active) { color: var(--brand-green); background: rgba(15, 99, 67, 0.05); }
   nav button.active { background: var(--surface); color: var(--brand-green); box-shadow: 0 2px 6px var(--shadow); }
+
+  /* --- Monitor de Estado (Ahora en el Header) --- */
+  .status-monitor {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--ink-soft);
+    background: rgba(248, 250, 252, 0.8);
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    border: 1px solid var(--line);
+    transition: all 0.3s ease;
+  }
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+  .dot-online { background: var(--brand-green); box-shadow: 0 0 6px var(--brand-green); }
+  .dot-sync { background: var(--brand-orange); animation: pulse 1.5s infinite; }
+  .dot-error { background: #EF4444; box-shadow: 0 0 6px #EF4444; }
+  .dot-offline { background: var(--ink-soft); }
+  
+  @keyframes pulse {
+    0% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.2); }
+    100% { opacity: 1; transform: scale(1); }
+  }
 
   /* --- Layout principal Fluido --- */
   main { width: 98%; max-width: 1800px; margin: 0 auto; padding: 1.5rem 0.5rem 3rem; }
@@ -199,7 +236,10 @@
   .btn-secundario { background: var(--surface); color: var(--ink); border: 2px solid #E2E8F0; }
   .btn-secundario:hover { border-color: var(--ink-soft); background: #F1F5F9; }
 
-  /* Botón de Eliminar minimalista */
+  .btn-peligro { background: #EF4444; color: white; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3); }
+  .btn-peligro:hover { background: #DC2626; box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4); transform: translateY(-1px); }
+
+  /* Botón de Eliminar minimalista (icono) */
   .btn-eliminar {
     background: transparent;
     color: #94A3B8;
@@ -393,41 +433,7 @@
   .toast.error { border-left-color: #EF4444; }
   .toast.info { border-left-color: var(--brand-orange); }
 
-  /* --- MONITOR DE ESTADO --- */
-  .status-monitor {
-    position: fixed;
-    bottom: 2rem;
-    left: 2rem;
-    background: var(--surface);
-    border: 1px solid var(--line);
-    padding: 0.6rem 1.2rem;
-    border-radius: 50px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    box-shadow: 0 4px 15px var(--shadow);
-    z-index: 1000;
-    transition: all 0.3s ease;
-  }
-  .status-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-  }
-  .dot-online { background: var(--brand-green); box-shadow: 0 0 8px var(--brand-green); }
-  .dot-sync { background: var(--brand-orange); animation: pulse 1.5s infinite; }
-  .dot-error { background: #EF4444; box-shadow: 0 0 8px #EF4444; }
-  .dot-offline { background: var(--ink-soft); }
-  
-  @keyframes pulse {
-    0% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.5; transform: scale(1.2); }
-    100% { opacity: 1; transform: scale(1); }
-  }
-
-  /* --- Modal de Fecha de Pago --- */
+  /* --- Modales UI (Pago y Eliminar) --- */
   .modal-dialog {
     border: none;
     border-radius: 16px;
@@ -445,12 +451,19 @@
     flex-direction: column;
     gap: 1.5rem;
     min-width: 320px;
+    max-width: 400px;
   }
   .modal-content h3 {
     margin: 0;
     color: var(--brand-green);
     font-family: var(--display);
     font-size: 1.2rem;
+  }
+  .modal-content p {
+    margin: 0;
+    font-size: 0.95rem;
+    color: var(--ink);
+    line-height: 1.5;
   }
   .modal-actions {
     display: flex;
@@ -464,8 +477,8 @@
     header { flex-direction: column; align-items: stretch; text-align: center; }
     .brand-container { justify-content: center; }
     .notification-pill { justify-content: center; width: 100%; }
+    .header-actions { justify-content: center; flex-direction: column-reverse; }
     nav { justify-content: center; width: 100%; }
-    .status-monitor { bottom: 1rem; left: 1rem; }
     .toast-container { bottom: 1rem; right: 1rem; }
     .tabla-envoltura { overflow-x: auto; }
     table { min-width: 900px; table-layout: auto; }
@@ -490,10 +503,17 @@
     </div>
   </div>
 
-  <nav>
-    <button id="tab-historial" class="active">Historial</button>
-    <button id="tab-formulario">Nuevo pedido</button>
-  </nav>
+  <div class="header-actions">
+    <div id="status-monitor" class="status-monitor" title="Estado de conexión con la base de datos">
+      <div id="sm-dot" class="status-dot dot-online"></div>
+      <span id="sm-text">Iniciando...</span>
+    </div>
+    
+    <nav>
+      <button id="tab-historial" class="active">Historial</button>
+      <button id="tab-formulario">Nuevo pedido</button>
+    </nav>
+  </div>
 </header>
 
 <main>
@@ -638,12 +658,20 @@
   </div>
 </dialog>
 
-<!-- Contenedores -->
+<!-- Modal para Confirmar Eliminación -->
+<dialog id="modal-confirmar-eliminar" class="modal-dialog">
+  <div class="modal-content">
+    <h3 style="color: #EF4444;">Eliminar Pedido</h3>
+    <p id="texto-confirmar-eliminar"></p>
+    <div class="modal-actions">
+      <button class="btn btn-secundario" id="btn-cancelar-eliminar">Cancelar</button>
+      <button class="btn btn-peligro" id="btn-aceptar-eliminar">Sí, eliminar</button>
+    </div>
+  </div>
+</dialog>
+
+<!-- Contenedor Toasts -->
 <div id="toast-container" class="toast-container"></div>
-<div id="status-monitor" class="status-monitor">
-  <div id="sm-dot" class="status-dot dot-online"></div>
-  <span id="sm-text">Iniciando...</span>
-</div>
 
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbzhhL1YxAiqXj_LmSPLIe6jsJSgkyw_ejgUmEll4EynBKwDSbDPu009XBbKlAwxxuo/exec";
@@ -661,7 +689,7 @@ function setAppStatus(state, msg) {
   if(state === 'offline') statusDot.classList.add('dot-offline');
 }
 
-window.addEventListener('online', () => setAppStatus('online', 'Internet conectado'));
+window.addEventListener('online', () => setAppStatus('online', 'Conectado'));
 window.addEventListener('offline', () => setAppStatus('offline', 'Sin Internet'));
 
 async function fetchConTimeout(resource, options = {}) {
@@ -752,7 +780,7 @@ async function cargarHistorial(silencioso = false){
   }
   
   if(!silencioso) mostrarToast('Actualizando datos...', 'info');
-  setAppStatus('sync', 'Descargando datos...');
+  setAppStatus('sync', 'Sincronizando...');
   
   try{
     const res = await fetchConTimeout(API_URL);
@@ -762,7 +790,7 @@ async function cargarHistorial(silencioso = false){
     pedidosCache = data.pedidos.filter(p => p.tipo_registro !== 'CARGO_ENVIO');
     renderTabla();
     if(!silencioso) mostrarToast('Información actualizada con éxito', 'exito');
-    setAppStatus('online', 'Sincronizado al día');
+    setAppStatus('online', 'Actualizado');
   }catch(err){
     if(err.name === 'AbortError') {
       setAppStatus('error', 'Google no responde');
@@ -941,7 +969,7 @@ async function actualizarPedido(folio, cambios, msjExito){
     return;
   }
   
-  setAppStatus('sync', 'Guardando cambios...');
+  setAppStatus('sync', 'Guardando...');
   
   try{
     const res = await fetchConTimeout(API_URL, {
@@ -953,7 +981,7 @@ async function actualizarPedido(folio, cambios, msjExito){
     if(!data.ok) throw new Error(data.error);
     
     mostrarToast(msjExito, 'exito');
-    setAppStatus('online', 'Cambio guardado en la nube');
+    setAppStatus('online', 'Actualizado');
   }catch(err){
     setAppStatus('error', 'Fallo al guardar');
     mostrarToast('No se pudo guardar el cambio en la base de datos. Se revertirá.', 'error');
@@ -961,12 +989,29 @@ async function actualizarPedido(folio, cambios, msjExito){
   }
 }
 
-/* ---------- Eliminar Pedido ---------- */
+/* ---------- Modal de Confirmación para Eliminar ---------- */
+let folioAEliminar = null;
+const modalEliminar = document.getElementById('modal-confirmar-eliminar');
+const textoEliminar = document.getElementById('texto-confirmar-eliminar');
+
 window.confirmarEliminar = function(folio) {
-  if(confirm(`¿Estás completamente seguro de que deseas eliminar el pedido #${folio}? Esta acción no se puede deshacer.`)) {
-    eliminarPedido(folio);
-  }
+  folioAEliminar = folio;
+  textoEliminar.innerHTML = `¿Estás seguro de que deseas eliminar el pedido <strong>#${folio}</strong>? Esta acción no se puede deshacer.`;
+  modalEliminar.showModal();
 }
+
+document.getElementById('btn-cancelar-eliminar').addEventListener('click', () => {
+  modalEliminar.close();
+  folioAEliminar = null;
+});
+
+document.getElementById('btn-aceptar-eliminar').addEventListener('click', () => {
+  if(folioAEliminar) {
+    eliminarPedido(folioAEliminar);
+  }
+  modalEliminar.close();
+  folioAEliminar = null;
+});
 
 async function eliminarPedido(folio) {
   mostrarToast(`Eliminando pedido #${folio}...`, 'info');
@@ -981,7 +1026,7 @@ async function eliminarPedido(folio) {
     if(!data.ok) throw new Error(data.error || 'No se pudo eliminar');
 
     mostrarToast(`Pedido #${folio} eliminado correctamente`, 'exito');
-    setAppStatus('online', 'Sincronizado');
+    setAppStatus('online', 'Actualizado');
     cargarHistorial(true);
   } catch(err) {
     setAppStatus('error', 'Error al borrar');
@@ -1009,7 +1054,7 @@ document.getElementById('form-pedido').addEventListener('submit', async function
   btn.disabled = true;
   
   mostrarToast('Enviando información...', 'info');
-  setAppStatus('sync', 'Registrando pedido...');
+  setAppStatus('sync', 'Registrando...');
 
   const pedido = {
     region: document.getElementById('f-in-region').value,
@@ -1031,7 +1076,7 @@ document.getElementById('form-pedido').addEventListener('submit', async function
     if(!data.ok) throw new Error(data.error);
     
     mostrarToast(`¡Pedido #${data.folio} registrado con éxito!`, 'exito');
-    setAppStatus('online', 'Sincronizado');
+    setAppStatus('online', 'Actualizado');
     this.reset();
     
     cargarHistorial(true);
