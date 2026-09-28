@@ -253,16 +253,37 @@
   tbody tr { transition: all 0.3s; }
   tbody tr:hover td { background-color: #F8FAFC; }
   tbody tr:last-child td { border-bottom: none; }
+
+  /* --- Totales Sutiles (Footer) --- */
+  tfoot td {
+    padding: 0.9rem 0.6rem;
+    background: #F8FAFC;
+    border-top: 2px solid var(--line);
+  }
+  .texto-total {
+    text-align: right;
+    font-family: var(--display);
+    font-size: 0.75rem;
+    color: var(--ink-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 700;
+  }
+  .total-val {
+    color: var(--brand-green);
+    font-weight: 800;
+    font-size: 0.95rem;
+  }
   
-  th:nth-child(1), td:nth-child(1) { width: 6.5%; }   /* Folio */
-  th:nth-child(2), td:nth-child(2) { width: 9.5%; }   /* Región */
-  th:nth-child(3), td:nth-child(3) { width: 12.5%; }  /* Guía / Paq */
-  th:nth-child(4), td:nth-child(4) { width: 28%; }    /* Descripción */
-  th:nth-child(5), td:nth-child(5) { width: 5.5%; }   /* Kg */
-  th:nth-child(6), td:nth-child(6) { width: 8.5%; }   /* Monto */
-  th:nth-child(7), td:nth-child(7) { width: 11%; }    /* Entrega */
-  th:nth-child(8), td:nth-child(8) { width: 10%; }    /* Pago */
-  th:nth-child(9), td:nth-child(9) { width: 8.5%; }   /* Fecha pago */
+  th:nth-child(1), td:nth-child(1) { width: 6.5%; }    /* Folio */
+  th:nth-child(2), td:nth-child(2) { width: 9.5%; }    /* Región */
+  th:nth-child(3), td:nth-child(3) { width: 12.5%; }   /* Guía / Paq */
+  th:nth-child(4), td:nth-child(4) { width: 28%; }     /* Descripción */
+  th:nth-child(5), td:nth-child(5) { width: 5.5%; }    /* Kg */
+  th:nth-child(6), td:nth-child(6) { width: 8.5%; }    /* Monto */
+  th:nth-child(7), td:nth-child(7) { width: 11%; }     /* Entrega */
+  th:nth-child(8), td:nth-child(8) { width: 10%; }     /* Pago */
+  th:nth-child(9), td:nth-child(9) { width: 8.5%; }    /* Fecha pago */
   th:nth-child(10), td:nth-child(10) { width: 5%; text-align: center; } /* Acción */
 
   .num { font-family: var(--mono); font-weight: 600; color: var(--ink-soft); }
@@ -372,7 +393,7 @@
   .toast.error { border-left-color: #EF4444; }
   .toast.info { border-left-color: var(--brand-orange); }
 
-  /* --- MONITOR DE ESTADO (NUEVO) --- */
+  /* --- MONITOR DE ESTADO --- */
   .status-monitor {
     position: fixed;
     bottom: 2rem;
@@ -528,6 +549,14 @@
           </tr>
         </thead>
         <tbody id="tabla-body"></tbody>
+        <tfoot id="tabla-foot" style="display: none;">
+          <tr>
+            <td colspan="4" class="texto-total">Total mostrado:</td>
+            <td class="num total-val" id="total-kg">0</td>
+            <td class="num total-val" id="total-monto">$0.00</td>
+            <td colspan="4"></td>
+          </tr>
+        </tfoot>
       </table>
       <div style="padding: 3rem; text-align: center; color: var(--ink-soft); display: none;" id="estado-vacio">
         No hay pedidos que coincidan con tu búsqueda.
@@ -632,11 +661,9 @@ function setAppStatus(state, msg) {
   if(state === 'offline') statusDot.classList.add('dot-offline');
 }
 
-// Detectar si se cae el Internet local
 window.addEventListener('online', () => setAppStatus('online', 'Internet conectado'));
 window.addEventListener('offline', () => setAppStatus('offline', 'Sin Internet'));
 
-// Función Fetch con tiempo límite de espera (Timeout de 15 segundos)
 async function fetchConTimeout(resource, options = {}) {
   const { timeout = 15000 } = options; 
   const controller = new AbortController();
@@ -784,15 +811,24 @@ function renderTabla(){
 
   const tbody = document.getElementById('tabla-body');
   const vacio = document.getElementById('estado-vacio');
+  const tfoot = document.getElementById('tabla-foot');
   tbody.innerHTML = '';
 
   if(filtrados.length === 0){
     vacio.style.display = 'block';
+    tfoot.style.display = 'none';
     return;
   }
   vacio.style.display = 'none';
+  tfoot.style.display = 'table-footer-group';
+
+  let sumaKg = 0;
+  let sumaMonto = 0;
 
   filtrados.forEach(p => {
+    sumaKg += Number(p.cantidad_kg || 0);
+    sumaMonto += Number(p.monto || 0);
+
     const tr = document.createElement('tr');
     tr.id = `fila-${p.folio}`;
 
@@ -831,6 +867,9 @@ function renderTabla(){
     `;
     tbody.appendChild(tr);
   });
+
+  document.getElementById('total-kg').textContent = sumaKg.toFixed(1);
+  document.getElementById('total-monto').textContent = '$' + sumaMonto.toLocaleString('es-MX', {minimumFractionDigits:2});
 }
 
 function hoyISO(){ return new Date().toISOString().slice(0,10); }
@@ -915,15 +954,10 @@ async function actualizarPedido(folio, cambios, msjExito){
     
     mostrarToast(msjExito, 'exito');
     setAppStatus('online', 'Cambio guardado en la nube');
-    
-    /* ¡EL GRAN CAMBIO ESTÁ AQUÍ! 
-       Ya NO llamamos a cargarHistorial(true) para no descargar TODA la base de datos de nuevo,
-       ya que el cambio ya se reflejó localmente en la tabla. Esto ahorra muchísimo tiempo. */
-       
   }catch(err){
     setAppStatus('error', 'Fallo al guardar');
     mostrarToast('No se pudo guardar el cambio en la base de datos. Se revertirá.', 'error');
-    cargarHistorial(true); // Solo recarga todo si hubo un error para sincronizar la realidad
+    cargarHistorial(true);
   }
 }
 
@@ -1000,7 +1034,6 @@ document.getElementById('form-pedido').addEventListener('submit', async function
     setAppStatus('online', 'Sincronizado');
     this.reset();
     
-    // Al crear sí requerimos descargar todo para obtener el folio oficial de Google
     cargarHistorial(true);
     setTimeout(() => { cambiarVista('historial'); }, 1500);
     
