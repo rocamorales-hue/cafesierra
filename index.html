@@ -148,7 +148,7 @@
   nav button:hover:not(.active) { color: var(--brand-green); background: rgba(15, 99, 67, 0.05); }
   nav button.active { background: var(--surface); color: var(--brand-green); box-shadow: 0 2px 6px var(--shadow); }
 
-  /* --- Monitor de Estado (Ahora en el Header) --- */
+  /* --- Monitor de Estado --- */
   .status-monitor {
     display: flex;
     align-items: center;
@@ -239,21 +239,21 @@
   .btn-peligro { background: #EF4444; color: white; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3); }
   .btn-peligro:hover { background: #DC2626; box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4); transform: translateY(-1px); }
 
-  /* Botón de Eliminar minimalista (icono) */
-  .btn-eliminar {
+  /* Botones de acción en tabla */
+  .btn-accion {
     background: transparent;
-    color: #94A3B8;
     border: none;
-    padding: 4px 8px;
+    padding: 4px 6px;
     border-radius: 6px;
     cursor: pointer;
-    font-size: 0.95rem;
+    font-size: 1rem;
     transition: all 0.2s;
   }
-  .btn-eliminar:hover {
-    background: #FEE2E2;
-    color: #DC2626;
-  }
+  .btn-eliminar { color: #94A3B8; }
+  .btn-eliminar:hover { background: #FEE2E2; color: #DC2626; }
+  
+  .btn-editar { color: #94A3B8; }
+  .btn-editar:hover { background: #E0F2FE; color: #0284C7; }
   
   /* --- Tabla Optimizada sin Scroll Horizontal --- */
   .tabla-envoltura {
@@ -315,16 +315,17 @@
     font-size: 0.95rem;
   }
   
+  /* Ajuste de columnas para que quepan los dos botones */
   th:nth-child(1), td:nth-child(1) { width: 6.5%; }    /* Folio */
   th:nth-child(2), td:nth-child(2) { width: 9.5%; }    /* Región */
   th:nth-child(3), td:nth-child(3) { width: 12.5%; }   /* Guía / Paq */
-  th:nth-child(4), td:nth-child(4) { width: 28%; }     /* Descripción */
+  th:nth-child(4), td:nth-child(4) { width: 26%; }     /* Descripción (reducida un poco) */
   th:nth-child(5), td:nth-child(5) { width: 5.5%; }    /* Kg */
   th:nth-child(6), td:nth-child(6) { width: 8.5%; }    /* Monto */
   th:nth-child(7), td:nth-child(7) { width: 11%; }     /* Entrega */
   th:nth-child(8), td:nth-child(8) { width: 10%; }     /* Pago */
   th:nth-child(9), td:nth-child(9) { width: 8.5%; }    /* Fecha pago */
-  th:nth-child(10), td:nth-child(10) { width: 5%; text-align: center; } /* Acción */
+  th:nth-child(10), td:nth-child(10) { width: 7%; text-align: center; white-space: nowrap; } /* Acción (ampliada) */
 
   .num { font-family: var(--mono); font-weight: 600; color: var(--ink-soft); }
   .col-desc { font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -433,7 +434,7 @@
   .toast.error { border-left-color: #EF4444; }
   .toast.info { border-left-color: var(--brand-orange); }
 
-  /* --- Modales UI (Pago y Eliminar) --- */
+  /* --- Modales UI (Pago, Eliminar, Editar) --- */
   .modal-dialog {
     border: none;
     border-radius: 16px;
@@ -451,7 +452,7 @@
     flex-direction: column;
     gap: 1.5rem;
     min-width: 320px;
-    max-width: 400px;
+    max-width: 500px; /* Ampliado para que quepa bien el form de edición */
   }
   .modal-content h3 {
     margin: 0;
@@ -642,6 +643,60 @@
     </div>
   </section>
 </main>
+
+<!-- Modal para Editar Pedido -->
+<dialog id="modal-editar" class="modal-dialog">
+  <div class="modal-content">
+    <h3>Editar Pedido <span id="edit-folio-title" style="color:var(--brand-orange);"></span></h3>
+    
+    <div class="fila-doble" style="margin-top:0.5rem;">
+      <div class="campo">
+        <label>Región</label>
+        <select id="edit-region">
+          <option value="CHIAPAS">Chiapas</option>
+          <option value="VERACRUZ">Veracruz</option>
+          <option value="OAXACA">Oaxaca</option>
+          <option value="OTRA">Otra</option>
+        </select>
+      </div>
+      <div class="campo">
+        <label>Paquetería</label>
+        <select id="edit-paqueteria">
+          <option value="">— Ninguna —</option>
+          <option value="PAQUETE EXPRESS">Paquete Express</option>
+          <option value="CORREOS MEXICO">Correos México</option>
+          <option value="ESTAFETA">Estafeta</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="fila-doble">
+      <div class="campo">
+        <label>Cantidad (kg)</label>
+        <input type="number" id="edit-cantidad" step="0.1" min="0">
+      </div>
+      <div class="campo">
+        <label>Monto total ($)</label>
+        <input type="number" id="edit-monto" step="0.01" min="0">
+      </div>
+    </div>
+
+    <div class="campo">
+      <label>Descripción</label>
+      <input type="text" id="edit-descripcion">
+    </div>
+
+    <div class="campo">
+      <label>Número de guía</label>
+      <input type="text" id="edit-guia">
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn btn-secundario" id="btn-cancelar-editar">Cancelar</button>
+      <button class="btn btn-primario" id="btn-guardar-editar">Guardar Cambios</button>
+    </div>
+  </div>
+</dialog>
 
 <!-- Modal para Fecha de Pago -->
 <dialog id="modal-fecha-pago" class="modal-dialog">
@@ -889,8 +944,9 @@ function renderTabla(){
         </span>
       </td>
       <td class="num" id="fecha-${p.folio}">${fechaPagoFormateada}</td>
-      <td style="text-align: center;">
-        <button class="btn-eliminar" onclick="confirmarEliminar('${p.folio}')" title="Eliminar este pedido">🗑️</button>
+      <td style="text-align: center; white-space: nowrap;">
+        <button class="btn-accion btn-editar" onclick="abrirModalEditar('${p.folio}')" title="Editar pedido">✏️</button>
+        <button class="btn-accion btn-eliminar" onclick="confirmarEliminar('${p.folio}')" title="Eliminar pedido">🗑️</button>
       </td>
     `;
     tbody.appendChild(tr);
@@ -988,6 +1044,62 @@ async function actualizarPedido(folio, cambios, msjExito){
     cargarHistorial(true);
   }
 }
+
+/* ---------- Modal de Edición Completa ---------- */
+let folioAEditar = null;
+const modalEditar = document.getElementById('modal-editar');
+
+window.abrirModalEditar = function(folio) {
+  const pedido = pedidosCache.find(p => p.folio == folio);
+  if(!pedido) return;
+  
+  folioAEditar = folio;
+  document.getElementById('edit-folio-title').textContent = `#${folio}`;
+  
+  // Rellenar formulario con datos actuales
+  document.getElementById('edit-region').value = pedido.region || '';
+  document.getElementById('edit-paqueteria').value = pedido.paqueteria || '';
+  document.getElementById('edit-cantidad').value = pedido.cantidad_kg || '';
+  document.getElementById('edit-monto').value = pedido.monto || '';
+  document.getElementById('edit-descripcion').value = pedido.descripcion || '';
+  document.getElementById('edit-guia').value = pedido.guia || '';
+  
+  modalEditar.showModal();
+};
+
+document.getElementById('btn-cancelar-editar').addEventListener('click', () => {
+  modalEditar.close();
+  folioAEditar = null;
+});
+
+document.getElementById('btn-guardar-editar').addEventListener('click', () => {
+  if(!folioAEditar) return;
+  
+  const cambios = {
+    region: document.getElementById('edit-region').value,
+    paqueteria: document.getElementById('edit-paqueteria').value,
+    cantidad_kg: parseFloat(document.getElementById('edit-cantidad').value) || null,
+    monto: parseFloat(document.getElementById('edit-monto').value) || null,
+    descripcion: document.getElementById('edit-descripcion').value,
+    guia: document.getElementById('edit-guia').value
+  };
+  
+  // Actualizar caché local
+  const pedido = pedidosCache.find(p => p.folio == folioAEditar);
+  if(pedido) {
+    Object.assign(pedido, cambios);
+  }
+  
+  modalEditar.close();
+  renderTabla();
+  animarFilaActualizada(folioAEditar);
+  
+  // Enviar a Google Sheets
+  actualizarPedido(folioAEditar, cambios, 'Datos del pedido actualizados con éxito');
+  
+  folioAEditar = null;
+});
+
 
 /* ---------- Modal de Confirmación para Eliminar ---------- */
 let folioAEliminar = null;
