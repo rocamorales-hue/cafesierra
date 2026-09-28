@@ -101,6 +101,7 @@
     gap: 12px;
     box-shadow: 0 4px 15px rgba(15, 99, 67, 0.2);
     font-family: var(--display);
+    min-height: 38px;
   }
 
   .pill-item {
@@ -125,7 +126,19 @@
     font-weight: bold;
   }
   
-  /* --- Navegación Animada y Monitor de Estatus --- */
+  /* --- Animación Skeleton (Estado de Carga) --- */
+  .skeleton-line {
+    height: 12px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    animation: pulse-skel 1.5s infinite ease-in-out;
+  }
+  @keyframes pulse-skel {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 1; }
+  }
+
+  /* --- Navegación Animada y Monitor de Estatus Minimalista --- */
   .header-actions {
     display: flex;
     align-items: center;
@@ -148,34 +161,33 @@
   nav button:hover:not(.active) { color: var(--brand-green); background: rgba(15, 99, 67, 0.05); }
   nav button.active { background: var(--surface); color: var(--brand-green); box-shadow: 0 2px 6px var(--shadow); }
 
-  /* --- Monitor de Estado --- */
-  .status-monitor {
+  /* --- Botón Nube de Estado (Sutil) --- */
+  .status-btn {
     display: flex;
     align-items: center;
-    gap: 8px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: var(--ink-soft);
-    background: rgba(248, 250, 252, 0.8);
-    padding: 0.4rem 0.8rem;
-    border-radius: 20px;
-    border: 1px solid var(--line);
-    transition: all 0.3s ease;
-  }
-  .status-dot {
-    width: 8px;
-    height: 8px;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
     border-radius: 50%;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    cursor: help;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.04);
   }
-  .dot-online { background: var(--brand-green); box-shadow: 0 0 6px var(--brand-green); }
-  .dot-sync { background: var(--brand-orange); animation: pulse 1.5s infinite; }
-  .dot-error { background: #EF4444; box-shadow: 0 0 6px #EF4444; }
-  .dot-offline { background: var(--ink-soft); }
+  .status-btn:hover { 
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08); 
+    transform: translateY(-2px); 
+  }
+  .btn-online { color: var(--brand-green); }
+  .btn-sync { color: var(--brand-orange); animation: pulse-border 1.5s infinite; }
+  .btn-error { color: #EF4444; background: #FEF2F2; border-color: #FECACA; }
+  .btn-offline { color: var(--ink-soft); opacity: 0.7; }
   
-  @keyframes pulse {
-    0% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.5; transform: scale(1.2); }
-    100% { opacity: 1; transform: scale(1); }
+  @keyframes pulse-border {
+    0% { box-shadow: 0 0 0 0 rgba(243, 160, 34, 0.4); }
+    70% { box-shadow: 0 0 0 8px rgba(243, 160, 34, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(243, 160, 34, 0); }
   }
 
   /* --- Layout principal Fluido --- */
@@ -255,7 +267,7 @@
   .btn-editar { color: #94A3B8; }
   .btn-editar:hover { background: #E0F2FE; color: #0284C7; }
   
-  /* --- Tabla Optimizada sin Scroll Horizontal --- */
+  /* --- Tabla Optimizada --- */
   .tabla-envoltura {
     width: 100%;
     border: 1px solid var(--line);
@@ -315,17 +327,16 @@
     font-size: 0.95rem;
   }
   
-  /* Ajuste de columnas para que quepan los dos botones */
   th:nth-child(1), td:nth-child(1) { width: 6.5%; }    /* Folio */
   th:nth-child(2), td:nth-child(2) { width: 9.5%; }    /* Región */
   th:nth-child(3), td:nth-child(3) { width: 12.5%; }   /* Guía / Paq */
-  th:nth-child(4), td:nth-child(4) { width: 26%; }     /* Descripción (reducida un poco) */
+  th:nth-child(4), td:nth-child(4) { width: 26%; }     /* Descripción */
   th:nth-child(5), td:nth-child(5) { width: 5.5%; }    /* Kg */
   th:nth-child(6), td:nth-child(6) { width: 8.5%; }    /* Monto */
   th:nth-child(7), td:nth-child(7) { width: 11%; }     /* Entrega */
   th:nth-child(8), td:nth-child(8) { width: 10%; }     /* Pago */
   th:nth-child(9), td:nth-child(9) { width: 8.5%; }    /* Fecha pago */
-  th:nth-child(10), td:nth-child(10) { width: 7%; text-align: center; white-space: nowrap; } /* Acción (ampliada) */
+  th:nth-child(10), td:nth-child(10) { width: 7%; text-align: center; white-space: nowrap; } /* Acción */
 
   .num { font-family: var(--mono); font-weight: 600; color: var(--ink-soft); }
   .col-desc { font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -434,7 +445,7 @@
   .toast.error { border-left-color: #EF4444; }
   .toast.info { border-left-color: var(--brand-orange); }
 
-  /* --- Modales UI (Pago, Eliminar, Editar) --- */
+  /* --- Modales UI --- */
   .modal-dialog {
     border: none;
     border-radius: 16px;
@@ -452,7 +463,7 @@
     flex-direction: column;
     gap: 1.5rem;
     min-width: 320px;
-    max-width: 500px; /* Ampliado para que quepa bien el form de edición */
+    max-width: 500px;
   }
   .modal-content h3 {
     margin: 0;
@@ -497,17 +508,23 @@
     </div>
   </div>
 
-  <!-- Píldora de Resumen incrustada en el Header -->
+  <!-- Píldora de Resumen con Efecto Esqueleto Inicial -->
   <div class="notification-pill" id="resumen">
     <div class="pill-item">
-      <span>☕ Iniciando...</span>
+      <div class="skeleton-line" style="width: 20px;"></div>
+      <div class="skeleton-line" style="width: 80px;"></div>
+    </div>
+    <div class="pill-divider" style="opacity: 0.3;"></div>
+    <div class="pill-item">
+      <div class="skeleton-line" style="width: 20px;"></div>
+      <div class="skeleton-line" style="width: 110px;"></div>
     </div>
   </div>
 
   <div class="header-actions">
-    <div id="status-monitor" class="status-monitor" title="Estado de conexión con la base de datos">
-      <div id="sm-dot" class="status-dot dot-online"></div>
-      <span id="sm-text">Iniciando...</span>
+    <!-- Nube de estatus minimalista -->
+    <div id="status-monitor" class="status-btn btn-sync" title="Iniciando conexión...">
+      <!-- El ícono SVG se inserta automáticamente por JavaScript -->
     </div>
     
     <nav>
@@ -732,19 +749,21 @@
 const API_URL = "https://script.google.com/macros/s/AKfycbzhhL1YxAiqXj_LmSPLIe6jsJSgkyw_ejgUmEll4EynBKwDSbDPu009XBbKlAwxxuo/exec";
 
 /* ---------- Monitor de Estado y Fetch Seguro ---------- */
-const statusText = document.getElementById('sm-text');
-const statusDot = document.getElementById('sm-dot');
+const statusSVGs = {
+  online: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="m9 15 3 3 5-5"/></svg>`, // Nube palomita
+  sync: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="M12 12v6"/><path d="m9 15 3-3 3 3"/></svg>`,   // Nube descargando
+  error: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="M12 12v4"/><path d="M12 20h.01"/></svg>`, // Nube alerta
+  offline: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12a6.004 6.004 0 0 0-7.44-5.842A6.002 6.002 0 0 0 4.094 9.176"/><path d="M4 14.899A7 7 0 0 0 15.71 22h1.79a4.5 4.5 0 0 0 2.5-8.242"/><path d="m2 2 20 20"/></svg>` // Nube tachada
+};
 
 function setAppStatus(state, msg) {
-  statusText.textContent = msg;
-  statusDot.className = 'status-dot'; 
-  if(state === 'online') statusDot.classList.add('dot-online');
-  if(state === 'sync') statusDot.classList.add('dot-sync');
-  if(state === 'error') statusDot.classList.add('dot-error');
-  if(state === 'offline') statusDot.classList.add('dot-offline');
+  const monitor = document.getElementById('status-monitor');
+  monitor.title = msg;
+  monitor.className = `status-btn btn-${state}`;
+  monitor.innerHTML = statusSVGs[state];
 }
 
-window.addEventListener('online', () => setAppStatus('online', 'Conectado'));
+window.addEventListener('online', () => setAppStatus('online', 'Sistema Conectado'));
 window.addEventListener('offline', () => setAppStatus('offline', 'Sin Internet'));
 
 async function fetchConTimeout(resource, options = {}) {
@@ -835,7 +854,7 @@ async function cargarHistorial(silencioso = false){
   }
   
   if(!silencioso) mostrarToast('Actualizando datos...', 'info');
-  setAppStatus('sync', 'Sincronizando...');
+  setAppStatus('sync', 'Sincronizando con la nube...');
   
   try{
     const res = await fetchConTimeout(API_URL);
@@ -1025,7 +1044,7 @@ async function actualizarPedido(folio, cambios, msjExito){
     return;
   }
   
-  setAppStatus('sync', 'Guardando...');
+  setAppStatus('sync', 'Guardando cambios en la nube...');
   
   try{
     const res = await fetchConTimeout(API_URL, {
@@ -1204,6 +1223,8 @@ document.getElementById('form-pedido').addEventListener('submit', async function
 });
 
 /* ---------- Inicialización ---------- */
+// Disparar el primer estado
+setAppStatus('sync', 'Conectando con la base de datos...');
 cargarHistorial(true);
 </script>
 
