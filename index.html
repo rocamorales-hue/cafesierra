@@ -163,7 +163,7 @@
   .campo { display: flex; flex-direction: column; gap: 0.4rem; }
   .campo label { font-size: 0.8rem; color: var(--ink-soft); font-weight: 600; }
   
-  select, input[type=text], input[type=number] {
+  select, input[type=text], input[type=number], input[type=date] {
     font-family: var(--sans);
     font-size: 0.9rem;
     padding: 0.6rem 0.9rem;
@@ -373,6 +373,38 @@
   .toast.error { border-left-color: #EF4444; }
   .toast.info { border-left-color: var(--brand-orange); }
 
+  /* --- Modal de Fecha de Pago --- */
+  .modal-dialog {
+    border: none;
+    border-radius: 16px;
+    padding: 0;
+    background: var(--surface);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+  }
+  .modal-dialog::backdrop {
+    background: rgba(15, 23, 42, 0.5);
+    backdrop-filter: blur(4px);
+  }
+  .modal-content {
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    min-width: 320px;
+  }
+  .modal-content h3 {
+    margin: 0;
+    color: var(--brand-green);
+    font-family: var(--display);
+    font-size: 1.2rem;
+  }
+  .modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 0.5rem;
+  }
+
   /* Responsive para Móviles */
   @media (max-width: 1024px) {
     header { flex-direction: column; align-items: stretch; text-align: center; }
@@ -528,6 +560,21 @@
     </div>
   </section>
 </main>
+
+<!-- Modal para Fecha de Pago -->
+<dialog id="modal-fecha-pago" class="modal-dialog">
+  <div class="modal-content">
+    <h3>Confirmar Pago</h3>
+    <div class="campo">
+      <label>¿En qué fecha se realizó el pago?</label>
+      <input type="date" id="input-fecha-pago" required>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secundario" id="btn-cancelar-fecha">Cancelar</button>
+      <button class="btn btn-primario" id="btn-guardar-fecha">Guardar Pago</button>
+    </div>
+  </div>
+</dialog>
 
 <!-- Contenedor para Notificaciones -->
 <div id="toast-container" class="toast-container"></div>
@@ -739,10 +786,24 @@ window.toggleEntrega = function(folio, estadoActual) {
   actualizarPedido(folio, { status_entrega: nuevoEstado }, 'Estatus de entrega actualizado');
 };
 
+// --- NUEVA LÓGICA DE PAGO CON CALENDARIO ---
+let folioEnProceso = null;
+const modalFecha = document.getElementById('modal-fecha-pago');
+const inputFecha = document.getElementById('input-fecha-pago');
+
 window.togglePago = function(folio, estadoActual) {
-  const nuevoEstado = estadoActual === 'PAGADO' ? 'PENDIENTE' : 'PAGADO';
-  const nuevaFecha = nuevoEstado === 'PAGADO' ? hoyISO() : '';
-  
+  if (estadoActual === 'PAGADO') {
+    // Si ya estaba pagado, lo regresa a pendiente sin preguntar
+    ejecutarCambioPago(folio, 'PENDIENTE', '');
+  } else {
+    // Si estaba pendiente, abre el modal
+    folioEnProceso = folio;
+    inputFecha.value = hoyISO(); // Sugiere el día de hoy por defecto
+    modalFecha.showModal();
+  }
+};
+
+function ejecutarCambioPago(folio, nuevoEstado, nuevaFecha) {
   const pedido = pedidosCache.find(p => p.folio == folio);
   if(pedido) {
     pedido.status_pago = nuevoEstado;
@@ -750,9 +811,25 @@ window.togglePago = function(folio, estadoActual) {
   }
   renderTabla();
   animarFilaActualizada(folio);
-
   actualizarPedido(folio, { status_pago: nuevoEstado, fecha_pago: nuevaFecha }, 'Estatus de pago actualizado');
-};
+}
+
+// Eventos de los botones del modal
+document.getElementById('btn-cancelar-fecha').addEventListener('click', () => {
+  modalFecha.close();
+  folioEnProceso = null;
+});
+
+document.getElementById('btn-guardar-fecha').addEventListener('click', () => {
+  const fechaSeleccionada = inputFecha.value;
+  if(!fechaSeleccionada) {
+    mostrarToast('Por favor selecciona una fecha válida', 'error');
+    return;
+  }
+  modalFecha.close();
+  ejecutarCambioPago(folioEnProceso, 'PAGADO', fechaSeleccionada);
+  folioEnProceso = null;
+});
 
 async function actualizarPedido(folio, cambios, msjExito){
   try{
