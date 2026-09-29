@@ -357,7 +357,7 @@
  <div id="toast-container" class="toast-container"></div> 
 
  <script> 
- const API_URL = "https://script.google.com/macros/s/AKfycbzhhL1YxAiqXj_LmSPLIe6jsJSgkyw_ejgUmEll4EynBKwDSbDPu009XBbKlAwxxuo/exec"; 
+ const API_URL = "https://script.google.com/macros/s/AKfycbwqFDAZb1WjgqjV1s38aRczpeGc2XxYvwIVAymrFPYaQ8J5todvKNApSFSbW4KmSRUF/exec"; 
 
  document.addEventListener("DOMContentLoaded", () => { document.getElementById('f-in-fecha-pedido').value = hoyISO(); }); 
 
@@ -425,7 +425,7 @@
      const res = await fetchConTimeout(API_URL); const data = await res.json(); if(!data.ok) throw new Error(data.error || 'Error'); 
      pedidosCache = data.pedidos.filter(p => p.tipo_registro !== 'CARGO_ENVIO'); renderTabla(); 
      if(!silencioso) mostrarToast('Actualizado con éxito', 'exito'); setAppStatus('online', 'Actualizado'); 
-   }catch(err){ setAppStatus('error', 'Fallo de conexión'); mostrarToast('Error al conectar', 'error'); } 
+   }catch(err){ setAppStatus('error', 'Fallo de conexión'); mostrarToast('Error al conectar, revisa el enlace API_URL', 'error'); } 
  } 
 
  function renderTabla(){ 
@@ -477,7 +477,7 @@
        <td class="num" id="fecha-${p.folio}">${fechaPagoFormateada}</td> 
        <td style="text-align: center; white-space: nowrap;"> 
          <button class="btn-accion btn-editar" onclick="abrirModalEditar('${p.folio}')" title="Editar pedido">✏️</button> 
-         <button class="btn-accion btn-eliminar" onclick="confirmarEliminar('${p.folio}')" title="Eliminar pedido">🗑️️</button> 
+         <button class="btn-accion btn-eliminar" onclick="confirmarEliminar('${p.folio}')" title="Eliminar pedido">🗑</button> 
        </td> 
      `; 
      tbody.appendChild(tr); 
@@ -556,7 +556,8 @@
    try{ await fetchConTimeout(API_URL, { method:'POST', body: JSON.stringify({action:'crear', pedido}) }); mostrarToast(`¡Registrado con éxito!`, 'exito'); setAppStatus('online', 'Actualizado'); this.reset(); document.getElementById('f-in-fecha-pedido').value = hoyISO(); cargarHistorial(true); setTimeout(() => { cambiarVista('historial'); }, 1500); }catch(err){ setAppStatus('error', 'Error'); mostrarToast('Fallo al guardar', 'error'); } finally { btn.textContent = textoOriginal; btn.disabled = false; } 
  }); 
 
- setAppStatus('sync', 'Conectando...'); cargarHistorial(true); 
+ setAppStatus('sync', 'Conectando...'); 
+ cargarHistorial(true); 
  </script> 
  </body> 
  </html>
